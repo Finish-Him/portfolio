@@ -15,14 +15,25 @@ import AppLayout from "./components/AppLayout";
 function Router() {
   return (
     <Switch>
+      {/* Home — portfólio de agentes MSc Academy */}
       <Route path="/" component={Home} />
-      <Route path="/chat" component={() => <AppLayout><Chat /></AppLayout>} />
-      <Route path="/chat/:sessionId" component={({ params }) => <AppLayout><Chat sessionId={params.sessionId} /></AppLayout>} />
-      <Route path="/topicos" component={() => <AppLayout><Topics /></AppLayout>} />
-      <Route path="/topicos/:slug" component={({ params }) => <AppLayout><TopicDetail slug={params.slug} /></AppLayout>} />
-      <Route path="/exercicios" component={() => <AppLayout><Exercises /></AppLayout>} />
-      <Route path="/exercicios/:topicSlug" component={({ params }) => <AppLayout><Exercises topicSlug={params.topicSlug} /></AppLayout>} />
-      <Route path="/progresso" component={() => <AppLayout><Progress /></AppLayout>} />
+
+      {/* Arquimedes — agente de matemática */}
+      <Route path="/arquimedes" component={() => <AppLayout agent="arquimedes"><Chat /></AppLayout>} />
+      <Route path="/arquimedes/chat" component={() => <AppLayout agent="arquimedes"><Chat /></AppLayout>} />
+      <Route path="/arquimedes/chat/:sessionId" component={({ params }) => <AppLayout agent="arquimedes"><Chat sessionId={params.sessionId} /></AppLayout>} />
+      <Route path="/arquimedes/topicos" component={() => <AppLayout agent="arquimedes"><Topics /></AppLayout>} />
+      <Route path="/arquimedes/topicos/:slug" component={({ params }) => <AppLayout agent="arquimedes"><TopicDetail slug={params.slug} /></AppLayout>} />
+      <Route path="/arquimedes/exercicios" component={() => <AppLayout agent="arquimedes"><Exercises /></AppLayout>} />
+      <Route path="/arquimedes/exercicios/:topicSlug" component={({ params }) => <AppLayout agent="arquimedes"><Exercises topicSlug={params.topicSlug} /></AppLayout>} />
+      <Route path="/arquimedes/progresso" component={() => <AppLayout agent="arquimedes"><Progress /></AppLayout>} />
+
+      {/* Legacy redirects — mantém compatibilidade */}
+      <Route path="/chat" component={() => <AppLayout agent="arquimedes"><Chat /></AppLayout>} />
+      <Route path="/topicos" component={() => <AppLayout agent="arquimedes"><Topics /></AppLayout>} />
+      <Route path="/exercicios" component={() => <AppLayout agent="arquimedes"><Exercises /></AppLayout>} />
+      <Route path="/progresso" component={() => <AppLayout agent="arquimedes"><Progress /></AppLayout>} />
+
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>

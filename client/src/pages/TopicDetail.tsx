@@ -65,7 +65,7 @@ export default function TopicDetail({ slug }: { slug: string }) {
     return (
       <div className="text-center py-20">
         <h2 className="text-2xl font-display font-bold mb-4">Tópico não encontrado</h2>
-        <Link href="/topicos">
+        <Link href="/arquimedes/topicos">
           <Button variant="outline" className="gap-2">
             <ArrowLeft className="h-4 w-4" />
             Voltar aos Tópicos
@@ -80,7 +80,7 @@ export default function TopicDetail({ slug }: { slug: string }) {
   return (
     <div className="max-w-4xl mx-auto space-y-8">
       {/* Back button */}
-      <Link href="/topicos">
+      <Link href="/arquimedes/topicos">
         <Button variant="ghost" className="gap-2">
           <ArrowLeft className="h-4 w-4" />
           Voltar
@@ -138,13 +138,13 @@ export default function TopicDetail({ slug }: { slug: string }) {
 
       {/* Actions */}
       <div className="flex flex-wrap gap-3">
-        <Link href={`/chat?topic=${slug}`}>
+        <Link href={`/arquimedes/chat?topic=${slug}`}>
           <Button size="lg" className="bg-msc-gradient text-white gap-2">
             <MessageCircle className="h-5 w-5" />
             Perguntar ao Arquimedes
           </Button>
         </Link>
-        <Link href={`/exercicios/${slug}`}>
+        <Link href={`/arquimedes/exercicios/${slug}`}>
           <Button size="lg" variant="outline" className="gap-2">
             <GraduationCap className="h-5 w-5" />
             Fazer Exercícios

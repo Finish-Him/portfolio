@@ -108,13 +108,13 @@ export default function Topics() {
 
                   {/* Actions */}
                   <div className="flex gap-2 pt-2">
-                    <Link href={`/topicos/${topic.slug}`} className="flex-1">
+                    <Link href={`/arquimedes/topicos/${topic.slug}`} className="flex-1">
                       <Button variant="outline" className="w-full gap-2">
                         <BookOpen className="h-4 w-4" />
                         Aprender
                       </Button>
                     </Link>
-                    <Link href={`/chat?topic=${topic.slug}`}>
+                    <Link href={`/arquimedes/chat?topic=${topic.slug}`}>
                       <Button className="bg-msc-gradient text-white gap-2">
                         <MessageCircle className="h-4 w-4" />
                       </Button>

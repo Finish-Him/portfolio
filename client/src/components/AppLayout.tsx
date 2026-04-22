@@ -5,45 +5,65 @@ import { useTheme } from "@/contexts/ThemeContext";
 import { Button } from "@/components/ui/button";
 import {
   MessageCircle, BookOpen, GraduationCap, BarChart3,
-  Sun, Moon, LogOut, Menu, X, Home
+  Sun, Moon, LogOut, Menu, X, Home, ChevronLeft
 } from "lucide-react";
 import { useState } from "react";
 
-const NAV_ITEMS = [
-  { href: "/", label: "Início", icon: Home },
-  { href: "/chat", label: "Chat", icon: MessageCircle },
-  { href: "/topicos", label: "Tópicos", icon: BookOpen },
-  { href: "/exercicios", label: "Exercícios", icon: GraduationCap },
-  { href: "/progresso", label: "Progresso", icon: BarChart3 },
-];
+type Agent = "arquimedes";
 
-export default function AppLayout({ children }: { children: React.ReactNode }) {
+const AGENT_NAV: Record<Agent, { href: string; label: string; icon: React.ElementType }[]> = {
+  arquimedes: [
+    { href: "/arquimedes/chat", label: "Chat", icon: MessageCircle },
+    { href: "/arquimedes/topicos", label: "Tópicos", icon: BookOpen },
+    { href: "/arquimedes/exercicios", label: "Exercícios", icon: GraduationCap },
+    { href: "/arquimedes/progresso", label: "Progresso", icon: BarChart3 },
+  ],
+};
+
+const AGENT_LABELS: Record<Agent, string> = {
+  arquimedes: "Arquimedes · Matemática",
+};
+
+type AppLayoutProps = {
+  children: React.ReactNode;
+  agent?: Agent;
+};
+
+export default function AppLayout({ children, agent = "arquimedes" }: AppLayoutProps) {
   const { user, isAuthenticated, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const [location] = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const navItems = AGENT_NAV[agent];
 
   return (
     <div className="min-h-screen bg-background">
       {/* Top Navbar */}
       <nav className="sticky top-0 z-50 border-b bg-card/80 backdrop-blur-xl">
         <div className="container flex h-16 items-center justify-between">
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-3 no-underline">
-            <img
-              src="/manus-storage/msc_academy_logo_7381d7e9.png"
-              alt="MSc Academy"
-              className="h-10 w-auto"
-            />
-            <span className="hidden sm:block font-display font-bold text-lg text-msc-gradient">
-              MSc Academy
+          {/* Logo + breadcrumb */}
+          <div className="flex items-center gap-3">
+            <Link href="/" className="flex items-center gap-2 no-underline group">
+              <img
+                src="/manus-storage/msc_academy_logo_7381d7e9.png"
+                alt="MSc Academy"
+                className="h-9 w-auto"
+              />
+              <span className="hidden sm:block font-display font-bold text-base text-msc-gradient">
+                MSc Academy
+              </span>
+            </Link>
+            <span className="hidden sm:flex items-center gap-1 text-muted-foreground text-sm">
+              <ChevronLeft className="h-3.5 w-3.5 rotate-180" />
+              <span className="font-medium text-foreground">{AGENT_LABELS[agent]}</span>
             </span>
-          </Link>
+          </div>
 
           {/* Desktop Nav */}
           <div className="hidden md:flex items-center gap-1">
-            {NAV_ITEMS.map((item) => {
-              const isActive = location === item.href || (item.href !== "/" && location.startsWith(item.href));
+            {navItems.map((item) => {
+              const isActive = location === item.href || location.startsWith(item.href);
               return (
                 <Link key={item.href} href={item.href}>
                   <Button
@@ -67,7 +87,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
             {isAuthenticated ? (
               <div className="hidden md:flex items-center gap-2">
-                <span className="text-sm text-muted-foreground">{user?.name || "Aluno"}</span>
+                <span className="text-sm text-muted-foreground truncate max-w-[120px]">{user?.name || "Aluno"}</span>
                 <Button variant="ghost" size="icon" onClick={() => logout()} className="h-9 w-9">
                   <LogOut className="h-4 w-4" />
                 </Button>
@@ -93,8 +113,14 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         {/* Mobile Nav */}
         {mobileMenuOpen && (
           <div className="md:hidden border-t bg-card p-4 space-y-1">
-            {NAV_ITEMS.map((item) => {
-              const isActive = location === item.href || (item.href !== "/" && location.startsWith(item.href));
+            <Link href="/" onClick={() => setMobileMenuOpen(false)}>
+              <div className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-muted">
+                <Home className="h-5 w-5" />
+                <span className="font-medium">Início (Portfólio)</span>
+              </div>
+            </Link>
+            {navItems.map((item) => {
+              const isActive = location === item.href || location.startsWith(item.href);
               return (
                 <Link key={item.href} href={item.href} onClick={() => setMobileMenuOpen(false)}>
                   <div className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${

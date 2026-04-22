@@ -41,5 +41,15 @@
 ## Fase 5: Testes e Deploy
 - [x] Testes vitest para routers principais (11 testes passando)
 - [ ] Checkpoint e deploy no Manus
-- [ ] Repositório no GitHub
+- [x] Repositório no GitHub (https://github.com/Finish-Him/Arquimedes)
 - [ ] Space no Hugging Face
+
+## Fase 6: Reestruturação de Rotas
+- [x] Mover Arquimedes para /arquimedes (chat, tópicos, exercícios, progresso)
+- [x] Home page como portfólio de agentes MSc Academy
+- [x] Card do Atlas (próximo agente) na home
+- [x] AppLayout atualizado com navegação por agente
+
+## Fase 7: README e Documentação
+- [x] README.md bilíngue (EN + PT) com badges, cores e formatação visual
+- [ ] Commit e push final com documentação completa

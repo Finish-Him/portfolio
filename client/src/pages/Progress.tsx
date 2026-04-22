@@ -129,7 +129,7 @@ export default function Progress() {
                     ) : null}
                   </div>
                 </div>
-                <Link href={`/exercicios/${topic.slug}`}>
+                <Link href={`/arquimedes/exercicios/${topic.slug}`}>
                   <Button variant="outline" size="sm">Praticar</Button>
                 </Link>
               </div>
@@ -145,7 +145,7 @@ export default function Progress() {
           <p className="text-muted-foreground mb-4">
             Você ainda não fez nenhum exercício. Comece agora!
           </p>
-          <Link href="/exercicios">
+          <Link href="/arquimedes/exercicios">
             <Button className="bg-msc-gradient text-white gap-2">
               Começar Exercícios
             </Button>
