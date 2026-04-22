@@ -1,0 +1,477 @@
+import { useState, useRef, useEffect, useCallback } from "react";
+import { Link } from "wouter";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  ArrowLeft, Bot, Package, Scale, Send, Mic, MicOff,
+  Sparkles, Globe, ChevronDown, RotateCcw, ExternalLink
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Streamdown } from "streamdown";
+
+// ─── Agent definitions ───────────────────────────────────────────────────────
+const AGENTS = [
+  {
+    id: "arquimedes",
+    name: "Arquimedes",
+    tagline: "Interactive Math Agent",
+    description: "LLM + TTS + SSE Streaming + Adaptive exercises. Teaches addition, subtraction, division, fractions, sets, percentages and rule of three.",
+    avatar: "/manus-storage/Arquimedes_f63227f7.webp",
+    gradient: "from-blue-500 via-cyan-500 to-blue-600",
+    glow: "shadow-blue-500/30",
+    border: "border-blue-500/40",
+    activeBg: "bg-blue-500/10",
+    textColor: "text-blue-400",
+    icon: Bot,
+    available: true,
+    chatHref: "/arquimedes/chat",
+    placeholder: "Ask Arquimedes a math question...",
+    systemPrompt: "You are Arquimedes, a friendly and patient math tutor AI. You help students learn mathematics through clear explanations, step-by-step solutions, and encouraging feedback. You specialize in arithmetic, fractions, percentages, sets, and the rule of three. Always be encouraging and use simple language. When solving problems, show your work step by step.",
+    suggestedPrompts: [
+      "Explain fractions with a simple example",
+      "How do I calculate 15% of 200?",
+      "What is the rule of three?",
+      "Help me understand sets",
+    ],
+  },
+  {
+    id: "atlas",
+    name: "Atlas",
+    tagline: "DTIC Asset Management — Detran-RJ",
+    description: "Agent for DTIC asset management at Detran-RJ. Asset control, tracking and automated reporting. Powered by LangGraph + PostgreSQL.",
+    avatar: "https://d2xsxph8kpxj0f.cloudfront.net/310519663548238703/KFrFYg84PBb8CrQscNDMJb/atlas_avatar_v2-7i7xiDPiuVvvtmb4YQmRbp.webp",
+    gradient: "from-emerald-500 via-teal-500 to-emerald-600",
+    glow: "shadow-emerald-500/30",
+    border: "border-emerald-500/40",
+    activeBg: "bg-emerald-500/10",
+    textColor: "text-emerald-400",
+    icon: Package,
+    available: false,
+    chatHref: null,
+    placeholder: "Ask Atlas about asset management...",
+    systemPrompt: "You are Atlas, an AI agent specialized in IT asset management for government agencies. You help track, manage, and report on technology assets. Currently in development — full capabilities coming soon.",
+    suggestedPrompts: [
+      "What assets does DTIC manage?",
+      "How does automated reporting work?",
+      "Explain asset lifecycle management",
+      "What is PGvector used for?",
+    ],
+  },
+  {
+    id: "artemis",
+    name: "Artemis",
+    tagline: "Brazilian Bar Exam Prep",
+    description: "Specialized agent for Brazilian Bar Exam (OAB) preparation. Questions, mock exams and contextualized explanations using RAG.",
+    avatar: "/manus-storage/ArtemisPrincipal_e1733188.png",
+    gradient: "from-amber-500 via-orange-500 to-amber-600",
+    glow: "shadow-amber-500/30",
+    border: "border-amber-500/40",
+    activeBg: "bg-amber-500/10",
+    textColor: "text-amber-400",
+    icon: Scale,
+    available: false,
+    chatHref: null,
+    placeholder: "Ask Artemis about OAB exam topics...",
+    systemPrompt: "You are Artemis, an AI agent specialized in Brazilian Bar Exam (OAB) preparation. You help law students study constitutional law, civil law, criminal law, and procedural law. Currently in development — full RAG capabilities coming soon.",
+    suggestedPrompts: [
+      "What topics are on the OAB exam?",
+      "Explain constitutional principles",
+      "What is habeas corpus?",
+      "How to prepare for OAB in 3 months?",
+    ],
+  },
+];
+
+// ─── Types ───────────────────────────────────────────────────────────────────
+interface Message {
+  role: "user" | "assistant";
+  content: string;
+  timestamp: number;
+}
+
+// ─── Single agent chat panel ─────────────────────────────────────────────────
+function AgentChat({ agent }: { agent: typeof AGENTS[0] }) {
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [input, setInput] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [streamContent, setStreamContent] = useState("");
+  const bottomRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, streamContent]);
+
+  const sendMessage = useCallback(async (text: string) => {
+    if (!text.trim() || isLoading) return;
+
+    const userMsg: Message = { role: "user", content: text, timestamp: Date.now() };
+    setMessages((prev) => [...prev, userMsg]);
+    setInput("");
+    setIsLoading(true);
+    setStreamContent("");
+
+    // For Arquimedes — use real SSE endpoint
+    if (agent.id === "arquimedes") {
+      try {
+        const history = messages.map((m) => ({ role: m.role, content: m.content }));
+        const res = await fetch("/api/chat/stream", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: text, history }),
+        });
+
+        if (!res.ok || !res.body) throw new Error("Stream failed");
+
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder();
+        let accumulated = "";
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          const chunk = decoder.decode(value, { stream: true });
+          const lines = chunk.split("\n");
+          for (const line of lines) {
+            if (line.startsWith("data: ")) {
+              const data = line.slice(6);
+              if (data === "[DONE]") break;
+              try {
+                const parsed = JSON.parse(data);
+                if (parsed.token) {
+                  accumulated += parsed.token;
+                  setStreamContent(accumulated);
+                }
+              } catch {
+                // ignore parse errors
+              }
+            }
+          }
+        }
+
+        setMessages((prev) => [...prev, { role: "assistant", content: accumulated, timestamp: Date.now() }]);
+        setStreamContent("");
+      } catch {
+        setMessages((prev) => [...prev, {
+          role: "assistant",
+          content: "Sorry, I encountered an error. Please try again.",
+          timestamp: Date.now(),
+        }]);
+        setStreamContent("");
+      }
+    } else {
+      // Atlas & Artemis — simulated response (coming soon)
+      await new Promise((r) => setTimeout(r, 800));
+      const comingSoon = `I'm **${agent.name}**, and I'm currently in development! 🚀\n\nFull capabilities are coming soon. In the meantime, you can:\n- Try **Arquimedes** — our fully functional math agent\n- Check the [Blog](/blog) for technical articles about my architecture\n- Follow on [LinkedIn](https://www.linkedin.com/in/moises-costa-rj/) for updates\n\nYour question was: *"${text}"* — I'll be able to answer that soon!`;
+      setMessages((prev) => [...prev, { role: "assistant", content: comingSoon, timestamp: Date.now() }]);
+      setStreamContent("");
+    }
+
+    setIsLoading(false);
+  }, [agent, messages, isLoading]);
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage(input);
+    }
+  };
+
+  const reset = () => {
+    setMessages([]);
+    setStreamContent("");
+    setInput("");
+  };
+
+  return (
+    <div className="flex flex-col h-full">
+      {/* Messages area */}
+      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4 min-h-0">
+        {messages.length === 0 && !isLoading && (
+          <div className="flex flex-col items-center justify-center h-full text-center py-8">
+            <div className="relative mb-4">
+              <div className={`absolute -inset-2 bg-gradient-to-r ${agent.gradient} rounded-2xl blur opacity-30`} />
+              <img src={agent.avatar} alt={agent.name} className="relative w-20 h-20 rounded-2xl object-cover shadow-xl" />
+            </div>
+            <h3 className="text-white font-display font-bold text-lg mb-1">{agent.name}</h3>
+            <p className="text-slate-400 text-sm mb-6 max-w-xs">{agent.tagline}</p>
+            {!agent.available && (
+              <div className="mb-4 px-3 py-1.5 rounded-full bg-slate-800/60 border border-slate-700/40 text-slate-400 text-xs font-medium">
+                🚧 In Development — Frontend Preview
+              </div>
+            )}
+            <div className="grid grid-cols-1 gap-2 w-full max-w-xs">
+              {agent.suggestedPrompts.map((prompt) => (
+                <button
+                  key={prompt}
+                  onClick={() => sendMessage(prompt)}
+                  className={`text-left px-3 py-2 rounded-xl bg-white/5 border border-slate-700/40 text-slate-300 text-xs hover:bg-white/10 hover:${agent.border} transition-all`}
+                >
+                  {prompt}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {messages.map((msg) => (
+          <div key={msg.timestamp} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"} gap-3`}>
+            {msg.role === "assistant" && (
+              <img src={agent.avatar} alt={agent.name} className="w-8 h-8 rounded-xl object-cover flex-shrink-0 mt-1" />
+            )}
+            <div className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${
+              msg.role === "user"
+                ? "bg-gradient-to-br from-blue-600 to-cyan-600 text-white rounded-br-sm"
+                : "bg-[#0c1629]/80 border border-slate-800/60 text-slate-200 rounded-bl-sm"
+            }`}>
+              {msg.role === "assistant" ? (
+                <div className="prose prose-invert prose-sm max-w-none prose-p:my-1 prose-headings:my-2 prose-code:text-cyan-300 prose-code:bg-slate-800/80 prose-code:px-1 prose-code:rounded prose-a:text-blue-400">
+                  <Streamdown>{msg.content}</Streamdown>
+                </div>
+              ) : msg.content}
+            </div>
+          </div>
+        ))}
+
+        {/* Streaming message */}
+        {isLoading && (
+          <div className="flex justify-start gap-3">
+            <img src={agent.avatar} alt={agent.name} className="w-8 h-8 rounded-xl object-cover flex-shrink-0 mt-1" />
+            <div className="max-w-[85%] rounded-2xl rounded-bl-sm px-4 py-3 text-sm bg-[#0c1629]/80 border border-slate-800/60 text-slate-200">
+              {streamContent ? (
+                <div className="prose prose-invert prose-sm max-w-none prose-p:my-1 prose-code:text-cyan-300 prose-code:bg-slate-800/80 prose-code:px-1 prose-code:rounded">
+                  <Streamdown>{streamContent}</Streamdown>
+                </div>
+              ) : (
+                <div className="flex items-center gap-1.5">
+                  <div className="w-1.5 h-1.5 rounded-full bg-slate-400 animate-bounce" style={{ animationDelay: "0ms" }} />
+                  <div className="w-1.5 h-1.5 rounded-full bg-slate-400 animate-bounce" style={{ animationDelay: "150ms" }} />
+                  <div className="w-1.5 h-1.5 rounded-full bg-slate-400 animate-bounce" style={{ animationDelay: "300ms" }} />
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        <div ref={bottomRef} />
+      </div>
+
+      {/* Input area */}
+      <div className="border-t border-slate-800/60 p-3 bg-[#060d1b]/80">
+        <div className="flex gap-2 items-end">
+          <div className="flex-1 relative">
+            <Textarea
+              ref={textareaRef}
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder={agent.placeholder}
+              rows={1}
+              className="resize-none bg-slate-800/60 border-slate-700/60 text-slate-200 placeholder-slate-500 focus:border-blue-500/60 rounded-xl text-sm min-h-[42px] max-h-[120px] pr-2"
+              style={{ height: "auto" }}
+            />
+          </div>
+          {messages.length > 0 && (
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={reset}
+              className="border-slate-700/60 text-slate-500 hover:text-white h-[42px] px-2.5 rounded-xl"
+            >
+              <RotateCcw className="h-3.5 w-3.5" />
+            </Button>
+          )}
+          <Button
+            size="sm"
+            onClick={() => sendMessage(input)}
+            disabled={!input.trim() || isLoading}
+            className={`bg-gradient-to-r ${agent.gradient} text-white border-0 h-[42px] px-4 rounded-xl shadow-lg disabled:opacity-40`}
+          >
+            <Send className="h-4 w-4" />
+          </Button>
+        </div>
+        <p className="text-xs text-slate-600 mt-1.5 text-center">
+          Press Enter to send · Shift+Enter for new line
+        </p>
+      </div>
+    </div>
+  );
+}
+
+// ─── Main page ───────────────────────────────────────────────────────────────
+export default function Agents() {
+  const [activeAgent, setActiveAgent] = useState(0);
+  const agent = AGENTS[activeAgent];
+
+  return (
+    <div className="min-h-screen bg-[#060d1b] text-white flex flex-col">
+      {/* ── Header ──────────────────────────────────────────────────────── */}
+      <div className="border-b border-slate-800/60 bg-[#060d1b]/95 backdrop-blur-xl sticky top-0 z-50">
+        <div className="container flex items-center justify-between h-16">
+          <Link href="/">
+            <button className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
+              <ArrowLeft className="h-4 w-4" />
+              <span className="text-sm font-medium">MSc Academy</span>
+            </button>
+          </Link>
+          <div className="flex items-center gap-2">
+            <Sparkles className="h-4 w-4 text-blue-400" />
+            <span className="text-sm font-bold text-white">AI Agents</span>
+          </div>
+          <a href="https://www.linkedin.com/in/moises-costa-rj/" target="_blank" rel="noopener noreferrer">
+            <Button size="sm" variant="outline" className="border-slate-700/60 text-slate-400 hover:text-white gap-1.5 text-xs">
+              <Globe className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">by Moises Costa</span>
+            </Button>
+          </a>
+        </div>
+      </div>
+
+      {/* ── Agent selector tabs ──────────────────────────────────────────── */}
+      <div className="border-b border-slate-800/60 bg-[#060d1b]/80 backdrop-blur-sm">
+        <div className="container">
+          <div className="flex gap-0">
+            {AGENTS.map((a, i) => {
+              const Icon = a.icon;
+              return (
+                <button
+                  key={a.id}
+                  onClick={() => setActiveAgent(i)}
+                  className={`relative flex items-center gap-2.5 px-5 py-4 text-sm font-semibold transition-all border-b-2 ${
+                    activeAgent === i
+                      ? `${a.textColor} border-current bg-white/5`
+                      : "text-slate-500 border-transparent hover:text-slate-300 hover:bg-white/5"
+                  }`}
+                >
+                  <div className="relative">
+                    <img src={a.avatar} alt={a.name} className="w-6 h-6 rounded-lg object-cover" />
+                    {!a.available && (
+                      <div className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-amber-500 border border-[#060d1b]" />
+                    )}
+                  </div>
+                  <span>{a.name}</span>
+                  {!a.available && (
+                    <span className="hidden sm:inline text-xs px-1.5 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20 font-normal">
+                      Soon
+                    </span>
+                  )}
+                  {activeAgent === i && (
+                    <motion.div
+                      layoutId="agent-tab-indicator"
+                      className={`absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r ${a.gradient}`}
+                    />
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* ── Main content ────────────────────────────────────────────────── */}
+      <div className="flex-1 container py-6">
+        <div className="grid lg:grid-cols-3 gap-6 h-full" style={{ minHeight: "calc(100vh - 200px)" }}>
+
+          {/* Left: Agent info panel */}
+          <div className="lg:col-span-1">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={agent.id}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.3 }}
+                className="rounded-2xl border border-slate-800/60 bg-[#0c1629]/60 backdrop-blur-sm overflow-hidden h-full"
+              >
+                {/* Top gradient bar */}
+                <div className={`h-1.5 w-full bg-gradient-to-r ${agent.gradient}`} />
+
+                <div className="p-6">
+                  {/* Avatar */}
+                  <div className="relative mb-5">
+                    <div className={`absolute -inset-2 bg-gradient-to-r ${agent.gradient} rounded-2xl blur opacity-20`} />
+                    <img
+                      src={agent.avatar}
+                      alt={agent.name}
+                      className="relative w-full max-w-[200px] mx-auto aspect-square rounded-2xl object-cover shadow-2xl border border-slate-700/40"
+                    />
+                    {!agent.available && (
+                      <div className="absolute top-2 right-2 sm:right-[calc(50%-100px+8px)] px-2 py-1 rounded-full bg-amber-500/20 border border-amber-500/30 text-amber-400 text-xs font-bold">
+                        In Dev
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Name & tagline */}
+                  <h2 className="text-xl font-display font-extrabold text-white mb-1">{agent.name}</h2>
+                  <p className={`text-sm font-semibold mb-3 ${agent.textColor}`}>{agent.tagline}</p>
+                  <p className="text-slate-400 text-sm leading-relaxed mb-5">{agent.description}</p>
+
+                  {/* Stack tags */}
+                  <div className="flex flex-wrap gap-1.5 mb-5">
+                    {(agent.id === "arquimedes"
+                      ? ["LangChain", "React", "tRPC", "SSE", "TTS", "MySQL"]
+                      : agent.id === "atlas"
+                      ? ["LangGraph", "FastAPI", "PostgreSQL", "Supabase", "PGvector"]
+                      : ["RAG", "LangChain", "PGvector", "React", "FastAPI"]
+                    ).map((tech) => (
+                      <span key={tech} className="px-2 py-0.5 rounded-md bg-white/5 text-slate-400 text-xs border border-slate-700/40 font-mono">
+                        {tech}
+                      </span>
+                    ))}
+                  </div>
+
+                  {/* CTA */}
+                  {agent.available && agent.chatHref && (
+                    <Link href={agent.chatHref}>
+                      <Button className={`w-full bg-gradient-to-r ${agent.gradient} text-white border-0 gap-2 shadow-lg`}>
+                        <Sparkles className="h-4 w-4" />
+                        Full Experience
+                        <ExternalLink className="h-3.5 w-3.5" />
+                      </Button>
+                    </Link>
+                  )}
+                </div>
+              </motion.div>
+            </AnimatePresence>
+          </div>
+
+          {/* Right: Chat panel */}
+          <div className="lg:col-span-2">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={agent.id}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 20 }}
+                transition={{ duration: 0.3 }}
+                className="rounded-2xl border border-slate-800/60 bg-[#0c1629]/60 backdrop-blur-sm overflow-hidden flex flex-col"
+                style={{ height: "calc(100vh - 220px)", minHeight: "500px" }}
+              >
+                {/* Chat header */}
+                <div className={`flex items-center gap-3 px-4 py-3 border-b border-slate-800/60 bg-[#060d1b]/40`}>
+                  <div className="relative">
+                    <img src={agent.avatar} alt={agent.name} className="w-8 h-8 rounded-xl object-cover" />
+                    <div className={`absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-[#060d1b] ${agent.available ? "bg-emerald-400" : "bg-amber-400"}`} />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-white">{agent.name}</p>
+                    <p className={`text-xs ${agent.available ? "text-emerald-400" : "text-amber-400"}`}>
+                      {agent.available ? "Online · Ready to chat" : "In Development · Preview mode"}
+                    </p>
+                  </div>
+                  <div className="ml-auto flex items-center gap-1.5">
+                    <div className={`h-1 w-8 rounded-full bg-gradient-to-r ${agent.gradient}`} />
+                  </div>
+                </div>
+
+                {/* Chat body */}
+                <AgentChat key={agent.id} agent={agent} />
+              </motion.div>
+            </AnimatePresence>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

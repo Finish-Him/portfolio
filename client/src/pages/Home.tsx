@@ -212,9 +212,9 @@ const AGENTS = [
     tagline: { pt: "Patrimônio DTIC — Detran-RJ", en: "DTIC Asset Management — Detran-RJ", es: "Patrimonio DTIC — Detran-RJ" },
     desc: { pt: "Agente para gestão de patrimônio da DTIC do Detran-RJ. Controle de ativos, rastreamento e relatórios automatizados.", en: "Agent for DTIC asset management at Detran-RJ. Asset control, tracking and automated reporting.", es: "Agente para gestión de patrimonio DTIC de Detran-RJ. Control de activos, seguimiento e informes automatizados." },
     stack: ["LangGraph", "FastAPI", "PostgreSQL", "Supabase", "PGvector"],
-    avatar: null,
-    href: "#",
-    available: false,
+    avatar: "https://d2xsxph8kpxj0f.cloudfront.net/310519663548238703/KFrFYg84PBb8CrQscNDMJb/atlas_avatar_v2-7i7xiDPiuVvvtmb4YQmRbp.webp",
+    href: "/agents",
+    available: true,
     gradient: "from-emerald-500 via-teal-500 to-emerald-600",
     glow: "shadow-emerald-500/20",
   },
@@ -225,7 +225,7 @@ const AGENTS = [
     desc: { pt: "Agente especializado para preparação da prova da OAB. Questões, simulados e explicações contextualizadas.", en: "Specialized agent for Brazilian Bar Exam preparation. Questions, mock exams and contextualized explanations.", es: "Agente especializado para preparación del examen OAB. Preguntas, simulacros y explicaciones contextualizadas." },
     stack: ["RAG", "LangChain", "PGvector", "React", "FastAPI"],
     avatar: "/manus-storage/ArtemisPrincipal_e1733188.png",
-    href: "/artemis",
+    href: "/agents",
     available: true,
     gradient: "from-amber-500 via-orange-500 to-amber-600",
     glow: "shadow-amber-500/20",
@@ -272,15 +272,6 @@ const LINKS = [
 // ─── Sections for scroll-spy ─────────────────────────────────────────────────
 const SECTIONS = ["agents", "about", "stack", "career", "links"];
 
-// ─── Nav items (visible in navbar) ──────────────────────────────────────────
-const NAV_ITEMS = [
-  { id: "agents", scroll: true },
-  { id: "about", scroll: true },
-  { id: "stack", scroll: true },
-  { id: "career", scroll: true },
-  { id: "links", scroll: true },
-];
-
 // ─── Animation variants ──────────────────────────────────────────────────────
 const fadeUp = { hidden: { opacity: 0, y: 30 }, visible: { opacity: 1, y: 0 } };
 const fadeLeft = { hidden: { opacity: 0, x: -30 }, visible: { opacity: 1, x: 0 } };
@@ -290,7 +281,7 @@ const scaleIn = { hidden: { opacity: 0, scale: 0.9 }, visible: { opacity: 1, sca
 export default function Home() {
   const { isAuthenticated } = useAuth();
   const { theme, toggleTheme } = useTheme();
-  const [lang, setLang] = useState<Lang>("pt");
+  const [lang, setLang] = useState<Lang>("en");
   const [activeSection, setActiveSection] = useState("");
   const [showBackToTop, setShowBackToTop] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -345,25 +336,8 @@ export default function Home() {
             </span>
           </button>
 
-          {/* Desktop nav */}
+          {/* Desktop nav — simplified: Blog + Agents demos only */}
           <div className="hidden lg:flex items-center gap-1">
-            {SECTIONS.map((id) => (
-              <button
-                key={id}
-                onClick={() => scrollTo(id)}
-                className={`relative px-4 py-2 text-sm font-medium rounded-lg transition-all ${
-                  activeSection === id
-                    ? "text-blue-400 bg-blue-500/10"
-                    : "text-slate-400 hover:text-white hover:bg-white/5"
-                }`}
-              >
-                {t[`nav_${id}` as keyof typeof t] || id}
-                {activeSection === id && (
-                  <motion.div layoutId="nav-indicator" className="absolute bottom-0 left-2 right-2 h-0.5 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full" />
-                )}
-              </button>
-            ))}
-            <div className="w-px h-5 bg-slate-700/60 mx-1" />
             <Link href="/blog">
               <button className="relative px-4 py-2 text-sm font-medium rounded-lg transition-all text-slate-400 hover:text-white hover:bg-white/5 flex items-center gap-1.5">
                 <Newspaper className="h-3.5 w-3.5" />
@@ -371,19 +345,19 @@ export default function Home() {
               </button>
             </Link>
             <div className="w-px h-5 bg-slate-700/60 mx-1" />
-            <Link href="/arquimedes/chat">
+            <Link href="/agents">
               <button className="relative px-3 py-2 text-sm font-medium rounded-lg transition-all text-blue-400 hover:text-white hover:bg-blue-500/10 flex items-center gap-1.5 border border-blue-500/20 hover:border-blue-500/40">
                 <Bot className="h-3.5 w-3.5" />
                 Arquimedes
               </button>
             </Link>
-            <Link href="/atlas">
+            <Link href="/agents">
               <button className="relative px-3 py-2 text-sm font-medium rounded-lg transition-all text-emerald-400 hover:text-white hover:bg-emerald-500/10 flex items-center gap-1.5 border border-emerald-500/20 hover:border-emerald-500/40">
                 <Package className="h-3.5 w-3.5" />
                 Atlas
               </button>
             </Link>
-            <Link href="/artemis">
+            <Link href="/agents">
               <button className="relative px-3 py-2 text-sm font-medium rounded-lg transition-all text-amber-400 hover:text-white hover:bg-amber-500/10 flex items-center gap-1.5 border border-amber-500/20 hover:border-amber-500/40">
                 <Scale className="h-3.5 w-3.5" />
                 Artemis
@@ -448,31 +422,24 @@ export default function Home() {
               className="lg:hidden border-t border-blue-500/10 bg-[#060d1b]/95 backdrop-blur-2xl"
             >
               <div className="container py-4 flex flex-col gap-1">
-                {SECTIONS.map((id) => (
-                  <button
-                    key={id}
-                    onClick={() => scrollTo(id)}
-                    className={`px-4 py-3 text-left rounded-xl text-sm font-medium transition-all ${
-                      activeSection === id ? "text-blue-400 bg-blue-500/10" : "text-slate-400 hover:text-white hover:bg-white/5"
-                    }`}
-                  >
-                    {t[`nav_${id}` as keyof typeof t] || id}
-                  </button>
-                ))}
-                <div className="border-t border-slate-800/40 my-1" />
                 <Link href="/blog">
                   <button className="px-4 py-3 text-left rounded-xl text-sm font-medium text-slate-400 hover:text-white hover:bg-white/5 w-full flex items-center gap-2">
                     <Newspaper className="h-4 w-4" /> Blog
                   </button>
                 </Link>
-                <Link href="/arquimedes/chat">
+                <Link href="/agents">
                   <button className="px-4 py-3 text-left rounded-xl text-sm font-medium text-blue-400 hover:text-white hover:bg-blue-500/10 w-full flex items-center gap-2">
-                    <Bot className="h-4 w-4" /> Arquimedes Demo
+                    <Bot className="h-4 w-4" /> Arquimedes
                   </button>
                 </Link>
-                <Link href="/artemis">
+                <Link href="/agents">
+                  <button className="px-4 py-3 text-left rounded-xl text-sm font-medium text-emerald-400 hover:text-white hover:bg-emerald-500/10 w-full flex items-center gap-2">
+                    <Package className="h-4 w-4" /> Atlas
+                  </button>
+                </Link>
+                <Link href="/agents">
                   <button className="px-4 py-3 text-left rounded-xl text-sm font-medium text-amber-400 hover:text-white hover:bg-amber-500/10 w-full flex items-center gap-2">
-                    <BookMarked className="h-4 w-4" /> Artemis Demo
+                    <Scale className="h-4 w-4" /> Artemis
                   </button>
                 </Link>
                 <div className="border-t border-slate-800/40 my-1" />
@@ -546,40 +513,40 @@ export default function Home() {
                 {t.subheadline}
               </p>
 
-              {/* CTAs — Row 1 */}
-              <div className="flex flex-wrap gap-4 mb-3">
+              {/* CTAs — Row 1: primary actions */}
+              <div className="flex flex-wrap gap-3 mb-3">
                 <Button
                   size="lg"
                   onClick={() => scrollTo("agents")}
-                  className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white gap-2.5 text-base px-8 py-6 shadow-2xl shadow-blue-600/30 border-0 rounded-xl font-bold"
+                  className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white gap-2.5 text-base px-7 py-5 shadow-2xl shadow-blue-600/30 border-0 rounded-xl font-bold"
                 >
                   <Sparkles className="h-5 w-5" />
                   {t.cta_agents}
                   <ArrowRight className="h-5 w-5" />
                 </Button>
                 <a href="https://www.linkedin.com/in/moises-costa-rj/" target="_blank" rel="noopener noreferrer">
-                  <Button size="lg" variant="outline" className="border-slate-700/80 text-slate-300 hover:bg-blue-500/10 hover:border-blue-500/40 gap-2.5 text-base px-8 py-6 rounded-xl font-bold">
-                    <Linkedin className="h-5 w-5" />
+                  <Button size="lg" className="bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white gap-2.5 text-base px-7 py-5 rounded-xl font-bold border border-slate-700/60 shadow-lg">
+                    <Linkedin className="h-5 w-5 text-blue-400" />
                     {t.cta_linkedin}
                   </Button>
                 </a>
                 <a href="https://github.com/Finish-Him" target="_blank" rel="noopener noreferrer">
-                  <Button size="lg" variant="outline" className="border-slate-700/80 text-slate-300 hover:bg-blue-500/10 hover:border-blue-500/40 gap-2.5 text-base px-8 py-6 rounded-xl font-bold">
+                  <Button size="lg" className="bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white gap-2.5 text-base px-7 py-5 rounded-xl font-bold border border-slate-700/60 shadow-lg">
                     <Github className="h-5 w-5" />
                     {t.cta_github}
                   </Button>
                 </a>
               </div>
               {/* CTAs — Row 2: HuggingFace + WhatsApp */}
-              <div className="flex flex-wrap gap-4">
+              <div className="flex flex-wrap gap-3">
                 <a href="https://huggingface.co/Finish-him" target="_blank" rel="noopener noreferrer">
-                  <Button size="lg" variant="outline" className="border-orange-500/30 text-orange-300 hover:bg-orange-500/10 hover:border-orange-500/50 gap-2.5 text-base px-8 py-6 rounded-xl font-bold">
+                  <Button size="lg" className="bg-orange-500/15 hover:bg-orange-500/25 text-orange-300 hover:text-orange-200 gap-2.5 text-base px-7 py-5 rounded-xl font-bold border border-orange-500/30 shadow-lg">
                     <span className="text-lg leading-none">🤗</span>
                     {t.hf_spaces}
                   </Button>
                 </a>
                 <a href="https://wa.me/5521990741351" target="_blank" rel="noopener noreferrer">
-                  <Button size="lg" className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white gap-2.5 text-base px-8 py-6 rounded-xl font-bold border-0 shadow-xl shadow-green-900/30">
+                  <Button size="lg" className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white gap-2.5 text-base px-7 py-5 rounded-xl font-bold border-0 shadow-xl shadow-green-900/30">
                     <Phone className="h-5 w-5" />
                     {t.whatsapp}
                   </Button>

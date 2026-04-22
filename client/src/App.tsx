@@ -9,6 +9,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
+import Agents from "./pages/Agents";
 import Atlas from "./pages/Atlas";
 import Artemis from "./pages/Artemis";
 import Chat from "./pages/Chat";
@@ -28,6 +29,9 @@ function Router() {
       <Route path="/login" component={Login} />
       <Route path="/cadastro" component={Register} />
       <Route path="/register" component={Register} />
+
+      {/* Agents unified page */}
+      <Route path="/agents" component={Agents} />
 
       {/* Blog */}
       <Route path="/blog" component={Blog} />
