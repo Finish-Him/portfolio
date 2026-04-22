@@ -15,6 +15,13 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
+// ─── Google Analytics type declaration ────────────────────────────────────────
+declare global {
+  interface Window {
+    gtag?: (command: string, action: string, params?: Record<string, any>) => void;
+  }
+}
+
 // ─── i18n ────────────────────────────────────────────────────────────────────
 type Lang = "pt" | "en" | "es";
 
@@ -529,46 +536,54 @@ export default function Home() {
                 {t.subheadline}
               </p>
 
-              {/* CTAs — Row 1: primary actions */}
-              <div className="flex flex-wrap gap-3 mb-3">
+              {/* CTAs — Grid 3x2 com tamanho padronizado */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 w-full max-w-2xl">
+                {/* CTA 1: Try Live Agents */}
                 <Button
                   size="lg"
-                  onClick={() => scrollTo("agents")}
-                  className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white gap-2.5 text-base px-7 py-5 shadow-2xl shadow-blue-600/30 border-0 rounded-xl font-bold"
+                  onClick={() => { scrollTo("agents"); window.gtag?.("event", "cta_click", { button: "try_live_agents" }); }}
+                  className="w-full h-14 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white gap-2.5 text-base px-6 py-3 shadow-2xl shadow-blue-600/30 border-0 rounded-xl font-bold flex items-center justify-center"
                 >
                   <Sparkles className="h-5 w-5" />
                   {t.cta_agents}
                   <ArrowRight className="h-5 w-5" />
                 </Button>
-                <a href="https://www.linkedin.com/in/moises-costa-rj/" target="_blank" rel="noopener noreferrer">
-                  <Button size="lg" className="bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white gap-2.5 text-base px-7 py-5 rounded-xl font-bold border border-slate-700/60 shadow-lg">
+
+                {/* CTA 2: LinkedIn */}
+                <a href="https://www.linkedin.com/in/moises-costa-rj/" target="_blank" rel="noopener noreferrer" className="h-full" onClick={() => window.gtag?.("event", "cta_click", { button: "linkedin" })}>
+                  <Button size="lg" className="w-full h-14 bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white gap-2.5 text-base px-6 py-3 rounded-xl font-bold border border-slate-700/60 shadow-lg flex items-center justify-center">
                     <Linkedin className="h-5 w-5 text-blue-400" />
                     {t.cta_linkedin}
                   </Button>
                 </a>
-                <a href="https://github.com/Finish-Him" target="_blank" rel="noopener noreferrer">
-                  <Button size="lg" className="bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white gap-2.5 text-base px-7 py-5 rounded-xl font-bold border border-slate-700/60 shadow-lg">
+
+                {/* CTA 3: GitHub */}
+                <a href="https://github.com/Finish-Him" target="_blank" rel="noopener noreferrer" className="h-full" onClick={() => window.gtag?.("event", "cta_click", { button: "github" })}>
+                  <Button size="lg" className="w-full h-14 bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white gap-2.5 text-base px-6 py-3 rounded-xl font-bold border border-slate-700/60 shadow-lg flex items-center justify-center">
                     <Github className="h-5 w-5" />
                     {t.cta_github}
                   </Button>
                 </a>
-              </div>
-              {/* CTAs — Row 2: HuggingFace + WhatsApp + Download CV */}
-              <div className="flex flex-wrap gap-3">
-                <a href="https://huggingface.co/Finish-him" target="_blank" rel="noopener noreferrer">
-                  <Button size="lg" className="bg-orange-500/15 hover:bg-orange-500/25 text-orange-300 hover:text-orange-200 gap-2.5 text-base px-7 py-5 rounded-xl font-bold border border-orange-500/30 shadow-lg">
+
+                {/* CTA 4: HuggingFace */}
+                <a href="https://huggingface.co/Finish-him" target="_blank" rel="noopener noreferrer" className="h-full" onClick={() => window.gtag?.("event", "cta_click", { button: "huggingface" })}>
+                  <Button size="lg" className="w-full h-14 bg-orange-500/15 hover:bg-orange-500/25 text-orange-300 hover:text-orange-200 gap-2.5 text-base px-6 py-3 rounded-xl font-bold border border-orange-500/30 shadow-lg flex items-center justify-center">
                     <span className="text-lg leading-none">🤗</span>
                     {t.hf_spaces}
                   </Button>
                 </a>
-                <a href="https://wa.me/5521990741351" target="_blank" rel="noopener noreferrer">
-                  <Button size="lg" className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white gap-2.5 text-base px-7 py-5 rounded-xl font-bold border-0 shadow-xl shadow-green-900/30">
+
+                {/* CTA 5: WhatsApp */}
+                <a href="https://wa.me/5521990741351" target="_blank" rel="noopener noreferrer" className="h-full" onClick={() => window.gtag?.("event", "cta_click", { button: "whatsapp" })}>
+                  <Button size="lg" className="w-full h-14 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white gap-2.5 text-base px-6 py-3 rounded-xl font-bold border-0 shadow-xl shadow-green-900/30 flex items-center justify-center">
                     <Phone className="h-5 w-5" />
                     {t.whatsapp}
                   </Button>
                 </a>
-                <a href="/manus-storage/Moises_Costa_CV_final_794c1e54.pdf" download="Moises_Costa_CV.pdf">
-                  <Button size="lg" className="bg-blue-600/20 hover:bg-blue-600/35 text-blue-300 hover:text-blue-200 gap-2.5 text-base px-7 py-5 rounded-xl font-bold border border-blue-500/30 shadow-lg">
+
+                {/* CTA 6: Download CV */}
+                <a href="/manus-storage/Moises_Costa_CV_final_794c1e54.pdf" download="Moises_Costa_CV.pdf" className="h-full" onClick={() => window.gtag?.("event", "cta_click", { button: "download_cv" })}>
+                  <Button size="lg" className="w-full h-14 bg-blue-600/20 hover:bg-blue-600/35 text-blue-300 hover:text-blue-200 gap-2.5 text-base px-6 py-3 rounded-xl font-bold border border-blue-500/30 shadow-lg flex items-center justify-center">
                     <Download className="h-5 w-5" />
                     {t.cta_download}
                   </Button>
