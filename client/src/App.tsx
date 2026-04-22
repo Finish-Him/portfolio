@@ -6,6 +6,10 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Blog from "./pages/Blog";
+import Atlas from "./pages/Atlas";
+import Artemis from "./pages/Artemis";
 import Chat from "./pages/Chat";
 import Topics from "./pages/Topics";
 import TopicDetail from "./pages/TopicDetail";
@@ -19,10 +23,19 @@ function Router() {
       {/* Home — portfólio AI Engineer para recrutadores */}
       <Route path="/" component={Home} />
 
-      {/* Login simples */}
+      {/* Auth */}
       <Route path="/login" component={Login} />
+      <Route path="/cadastro" component={Register} />
+      <Route path="/register" component={Register} />
 
-      {/* Arquimedes — agente de matemática */}
+      {/* Blog */}
+      <Route path="/blog" component={Blog} />
+
+      {/* Agentes — páginas de apresentação */}
+      <Route path="/atlas" component={Atlas} />
+      <Route path="/artemis" component={Artemis} />
+
+      {/* Arquimedes — agente de matemática (demo direto) */}
       <Route path="/arquimedes" component={() => <AppLayout agent="arquimedes"><Chat /></AppLayout>} />
       <Route path="/arquimedes/chat" component={() => <AppLayout agent="arquimedes"><Chat /></AppLayout>} />
       <Route path="/arquimedes/chat/:sessionId" component={({ params }) => <AppLayout agent="arquimedes"><Chat sessionId={params.sessionId} /></AppLayout>} />

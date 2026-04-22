@@ -94,6 +94,55 @@ export function registerSimpleAuthRoutes(app: Express) {
     }
   });
 
+  // Register endpoint
+  app.post("/api/auth/register", async (req: Request, res: Response) => {
+    try {
+      const { name, username, password } = req.body;
+
+      if (!name || !username || !password) {
+        return res.status(400).json({ error: "Nome, usuário e senha são obrigatórios" });
+      }
+      if (username.length < 3) {
+        return res.status(400).json({ error: "Usuário deve ter pelo menos 3 caracteres" });
+      }
+      if (password.length < 4) {
+        return res.status(400).json({ error: "Senha deve ter pelo menos 4 caracteres" });
+      }
+
+      const openId = `simple_${username}`;
+
+      // Check if user already exists
+      const existingUser = await db.getUserByOpenId(openId);
+      if (existingUser) {
+        return res.status(409).json({ error: "Usuário já existe" });
+      }
+
+      // Create user in DB
+      await db.upsertUser({
+        openId,
+        name,
+        email: `${username}@mscacademy.com`,
+        role: "user",
+        loginMethod: "simple",
+        lastSignedIn: new Date(),
+      });
+
+      // Create JWT token and auto-login
+      const token = await createToken(username, name);
+      const cookieOptions = getSessionCookieOptions(req);
+      res.cookie(COOKIE_NAME, token, {
+        ...cookieOptions,
+        maxAge: 365 * 24 * 60 * 60 * 1000,
+      });
+
+      const dbUser = await db.getUserByOpenId(openId);
+      return res.json({ success: true, user: dbUser });
+    } catch (error) {
+      console.error("[SimpleAuth] Register error:", error);
+      return res.status(500).json({ error: "Erro interno" });
+    }
+  });
+
   // Check session endpoint
   app.get("/api/auth/check", async (req: Request, res: Response) => {
     const user = await authenticateSimple(req);

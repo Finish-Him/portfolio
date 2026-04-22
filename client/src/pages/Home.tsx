@@ -10,7 +10,8 @@ import {
   Github, Linkedin, Globe, Trophy, Briefcase,
   Code2, Brain, Cpu, Database, Layers, Zap,
   ChevronRight, ChevronDown, MapPin, Mail, Award, Lock,
-  Menu, X, Sparkles, Target, Shield
+  Menu, X, Sparkles, Target, Shield, Phone, BookMarked, Newspaper,
+  Package, Scale
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -69,6 +70,11 @@ const T: Record<Lang, Record<string, string>> = {
     scroll_explore: "Explorar",
     back_to_top: "Voltar ao topo",
     nav_arquimedes: "Ir para Arquimedes",
+    nav_blog: "Blog",
+    nav_register: "Criar Conta",
+    nav_demo: "Demo",
+    whatsapp: "WhatsApp",
+    hf_spaces: "Hugging Face",
   },
   en: {
     headline: "AI Engineer & Full Stack Developer",
@@ -121,6 +127,11 @@ const T: Record<Lang, Record<string, string>> = {
     scroll_explore: "Explore",
     back_to_top: "Back to top",
     nav_arquimedes: "Go to Arquimedes",
+    nav_blog: "Blog",
+    nav_register: "Create Account",
+    nav_demo: "Demo",
+    whatsapp: "WhatsApp",
+    hf_spaces: "Hugging Face",
   },
   es: {
     headline: "AI Engineer & Full Stack Developer",
@@ -173,6 +184,11 @@ const T: Record<Lang, Record<string, string>> = {
     scroll_explore: "Explorar",
     back_to_top: "Volver arriba",
     nav_arquimedes: "Ir a Arquimedes",
+    nav_blog: "Blog",
+    nav_register: "Crear Cuenta",
+    nav_demo: "Demo",
+    whatsapp: "WhatsApp",
+    hf_spaces: "Hugging Face",
   },
 };
 
@@ -208,9 +224,9 @@ const AGENTS = [
     tagline: { pt: "Preparação para a OAB", en: "Brazilian Bar Exam Prep", es: "Preparación para la OAB" },
     desc: { pt: "Agente especializado para preparação da prova da OAB. Questões, simulados e explicações contextualizadas.", en: "Specialized agent for Brazilian Bar Exam preparation. Questions, mock exams and contextualized explanations.", es: "Agente especializado para preparación del examen OAB. Preguntas, simulacros y explicaciones contextualizadas." },
     stack: ["RAG", "LangChain", "PGvector", "React", "FastAPI"],
-    avatar: null,
-    href: "#",
-    available: false,
+    avatar: "/manus-storage/ArtemisPrincipal_e1733188.png",
+    href: "/artemis",
+    available: true,
     gradient: "from-amber-500 via-orange-500 to-amber-600",
     glow: "shadow-amber-500/20",
   },
@@ -249,11 +265,21 @@ const LINKS = [
   { label: "LinkedIn", href: "https://www.linkedin.com/in/moises-costa-rj/", icon: Linkedin, desc: "linkedin.com/in/moises-costa-rj" },
   { label: "GitHub", href: "https://github.com/Finish-Him", icon: Github, desc: "github.com/Finish-Him" },
   { label: "GitHub (MSc)", href: "https://github.com/Msc-Consultoriarj-org", icon: Github, desc: "github.com/Msc-Consultoriarj-org" },
-  { label: "Hugging Face", href: "https://huggingface.co/spaces/Finish-him", icon: Globe, desc: "huggingface.co/spaces/Finish-him" },
+  { label: "Hugging Face", href: "https://huggingface.co/Finish-him", icon: Globe, desc: "huggingface.co/Finish-him" },
+  { label: "WhatsApp", href: "https://wa.me/5521990741351", icon: Phone, desc: "+55 21 99074-1351" },
 ];
 
 // ─── Sections for scroll-spy ─────────────────────────────────────────────────
 const SECTIONS = ["agents", "about", "stack", "career", "links"];
+
+// ─── Nav items (visible in navbar) ──────────────────────────────────────────
+const NAV_ITEMS = [
+  { id: "agents", scroll: true },
+  { id: "about", scroll: true },
+  { id: "stack", scroll: true },
+  { id: "career", scroll: true },
+  { id: "links", scroll: true },
+];
 
 // ─── Animation variants ──────────────────────────────────────────────────────
 const fadeUp = { hidden: { opacity: 0, y: 30 }, visible: { opacity: 1, y: 0 } };
@@ -337,6 +363,32 @@ export default function Home() {
                 )}
               </button>
             ))}
+            <div className="w-px h-5 bg-slate-700/60 mx-1" />
+            <Link href="/blog">
+              <button className="relative px-4 py-2 text-sm font-medium rounded-lg transition-all text-slate-400 hover:text-white hover:bg-white/5 flex items-center gap-1.5">
+                <Newspaper className="h-3.5 w-3.5" />
+                Blog
+              </button>
+            </Link>
+            <div className="w-px h-5 bg-slate-700/60 mx-1" />
+            <Link href="/arquimedes/chat">
+              <button className="relative px-3 py-2 text-sm font-medium rounded-lg transition-all text-blue-400 hover:text-white hover:bg-blue-500/10 flex items-center gap-1.5 border border-blue-500/20 hover:border-blue-500/40">
+                <Bot className="h-3.5 w-3.5" />
+                Arquimedes
+              </button>
+            </Link>
+            <Link href="/atlas">
+              <button className="relative px-3 py-2 text-sm font-medium rounded-lg transition-all text-emerald-400 hover:text-white hover:bg-emerald-500/10 flex items-center gap-1.5 border border-emerald-500/20 hover:border-emerald-500/40">
+                <Package className="h-3.5 w-3.5" />
+                Atlas
+              </button>
+            </Link>
+            <Link href="/artemis">
+              <button className="relative px-3 py-2 text-sm font-medium rounded-lg transition-all text-amber-400 hover:text-white hover:bg-amber-500/10 flex items-center gap-1.5 border border-amber-500/20 hover:border-amber-500/40">
+                <Scale className="h-3.5 w-3.5" />
+                Artemis
+              </button>
+            </Link>
           </div>
 
           <div className="flex items-center gap-2">
@@ -365,11 +417,18 @@ export default function Home() {
                 </Button>
               </Link>
             ) : (
-              <Link href="/login">
-                <Button size="sm" className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white border-0 shadow-lg shadow-blue-600/20">
-                  {t.nav_login}
-                </Button>
-              </Link>
+              <div className="flex items-center gap-2">
+                <Link href="/register">
+                  <Button size="sm" variant="outline" className="border-blue-500/30 text-blue-400 hover:bg-blue-500/10 gap-1.5 hidden sm:flex">
+                    {t.nav_register}
+                  </Button>
+                </Link>
+                <Link href="/login">
+                  <Button size="sm" className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white border-0 shadow-lg shadow-blue-600/20">
+                    {t.nav_login}
+                  </Button>
+                </Link>
+              </div>
             )}
 
             {/* Mobile menu */}
@@ -400,6 +459,33 @@ export default function Home() {
                     {t[`nav_${id}` as keyof typeof t] || id}
                   </button>
                 ))}
+                <div className="border-t border-slate-800/40 my-1" />
+                <Link href="/blog">
+                  <button className="px-4 py-3 text-left rounded-xl text-sm font-medium text-slate-400 hover:text-white hover:bg-white/5 w-full flex items-center gap-2">
+                    <Newspaper className="h-4 w-4" /> Blog
+                  </button>
+                </Link>
+                <Link href="/arquimedes/chat">
+                  <button className="px-4 py-3 text-left rounded-xl text-sm font-medium text-blue-400 hover:text-white hover:bg-blue-500/10 w-full flex items-center gap-2">
+                    <Bot className="h-4 w-4" /> Arquimedes Demo
+                  </button>
+                </Link>
+                <Link href="/artemis">
+                  <button className="px-4 py-3 text-left rounded-xl text-sm font-medium text-amber-400 hover:text-white hover:bg-amber-500/10 w-full flex items-center gap-2">
+                    <BookMarked className="h-4 w-4" /> Artemis Demo
+                  </button>
+                </Link>
+                <div className="border-t border-slate-800/40 my-1" />
+                <Link href="/register">
+                  <button className="px-4 py-3 text-left rounded-xl text-sm font-medium text-slate-400 hover:text-white hover:bg-white/5 w-full">
+                    {t.nav_register}
+                  </button>
+                </Link>
+                <Link href="/login">
+                  <button className="px-4 py-3 text-left rounded-xl text-sm font-medium text-blue-400 hover:text-white hover:bg-blue-500/10 w-full">
+                    {t.nav_login}
+                  </button>
+                </Link>
               </div>
             </motion.div>
           )}
@@ -794,6 +880,25 @@ export default function Home() {
               <span className="text-blue-400 text-sm font-bold tracking-widest uppercase">Career</span>
             </div>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-extrabold mb-16">{t.section_career}</h2>
+          </motion.div>
+
+          {/* Detran Identity Card */}
+          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} transition={{ duration: 0.5 }} className="mb-12">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 p-6 rounded-2xl border border-blue-500/20 bg-gradient-to-r from-blue-500/5 via-[#0c1629]/80 to-emerald-500/5 backdrop-blur-sm shadow-xl shadow-blue-900/10">
+              <div className="flex-shrink-0 p-3 bg-white rounded-xl shadow-lg">
+                <img src="/manus-storage/detran-logo-horizontal_bf146ebc.png" alt="Detran RJ" className="h-10 w-auto" />
+              </div>
+              <div className="flex-1">
+                <div className="flex flex-wrap items-center gap-3 mb-2">
+                  <h3 className="font-display font-extrabold text-white text-xl">Detran-RJ · DTIC</h3>
+                  <span className="px-3 py-1 rounded-full bg-gradient-to-r from-blue-500/20 to-cyan-500/20 text-blue-400 text-xs font-bold border border-blue-500/30">12 Anos</span>
+                  <span className="px-3 py-1 rounded-full bg-gradient-to-r from-emerald-500/20 to-teal-500/20 text-emerald-400 text-xs font-bold border border-emerald-500/30">Concursado 2013</span>
+                </div>
+                <p className="text-sm text-slate-300 leading-relaxed">
+                  Aprovado no concurso público de 2013 · Posse em <strong className="text-blue-400">04 de Abril de 2014</strong> · Lotado na <strong className="text-blue-400">DTIC — Diretoria de Tecnologia da Informação e Comunicação</strong>. Responsável por modernização de sistemas legados, implementação de pipelines GenAI, APIs REST com FastAPI e liderança técnica em projetos estratégicos.
+                </p>
+              </div>
+            </div>
           </motion.div>
 
           <div className="max-w-3xl space-y-8">

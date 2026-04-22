@@ -120,3 +120,15 @@
 - [x] Menos texto, mais informação visual
 - [x] Cards com hover 3D e sombras dinâmicas
 - [x] Seção de conquistas com imagens reais dos rankings
+
+## Fase 10: Atualizações v2.1
+- [x] Upload assets Artemis (avatar, principal, voz) e logos Detran-RJ
+- [x] HuggingFace e WhatsApp (+55 21 99074-1351) adicionados na seção Links
+- [x] Seção Detran expandida: história 12 anos, concurso 2013, posse 04/04/2014, DTIC
+- [x] Logo Detran-RJ na seção de carreira
+- [x] Página placeholder Blog
+- [x] Página placeholder Atlas
+- [x] Página placeholder Artemis com avatar
+- [x] Página de Cadastro (Register)
+- [x] Navbar atualizada: Blog, Artemis Demo, Atlas Demo, Arquimedes Demo, Login, Criar Conta visíveis
+- [x] Testes e checkpoint v2.1 (15/15 passando)
