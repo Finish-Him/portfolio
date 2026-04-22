@@ -12,7 +12,7 @@ import { BLOG_POSTS, getAllCategories } from "@/data/blogPosts";
 const fadeUp = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } };
 
 function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString("pt-BR", {
+  return new Date(iso).toLocaleDateString("en-US", {
     day: "2-digit",
     month: "long",
     year: "numeric",
@@ -20,15 +20,15 @@ function formatDate(iso: string): string {
 }
 
 export default function Blog() {
-  const [selectedCategory, setSelectedCategory] = useState<string>("Todos");
+  const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [searchQuery, setSearchQuery] = useState("");
 
-  const categories = useMemo(() => ["Todos", ...getAllCategories()], []);
+  const categories = useMemo(() => ["All", ...getAllCategories()], []);
 
   const filteredPosts = useMemo(() => {
     return BLOG_POSTS.filter((post) => {
       const matchesCategory =
-        selectedCategory === "Todos" || post.category === selectedCategory;
+        selectedCategory === "All" || post.category === selectedCategory;
       const matchesSearch =
         !searchQuery ||
         post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -73,16 +73,16 @@ export default function Blog() {
           >
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-sm font-medium mb-6">
               <Sparkles className="h-4 w-4" />
-              AI Engineering na Prática — Artigos técnicos por Moises Costa
+              AI Engineering in Practice — Technical articles by Moises Costa
             </div>
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-display font-extrabold mb-4 leading-tight">
               <span className="bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-500 bg-clip-text text-transparent">
                 Blog
               </span>{" "}
-              <span className="text-white">de AI Engineering</span>
+              <span className="text-white">on AI Engineering</span>
             </h1>
             <p className="text-lg text-slate-400 mb-8 leading-relaxed max-w-2xl">
-              Artigos técnicos sobre LangChain, LangGraph, RAG, prompt engineering, FastAPI e arquitetura de agentes de IA em produção. Conteúdo baseado em experiência real.
+              Technical articles on LangChain, LangGraph, RAG, prompt engineering, FastAPI and production AI agent architecture. Content based on real-world experience.
             </p>
 
             {/* Search */}
@@ -90,7 +90,7 @@ export default function Blog() {
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
               <input
                 type="text"
-                placeholder="Buscar artigos..."
+                placeholder="Search articles..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-11 pr-4 py-3 rounded-xl bg-slate-800/60 border border-slate-700/60 text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500/60 focus:bg-slate-800/80 transition-all text-sm"
@@ -101,12 +101,12 @@ export default function Blog() {
       </section>
 
       {/* ── Featured Post ───────────────────────────────────────────────── */}
-      {featuredPost && !searchQuery && selectedCategory === "Todos" && (
+      {featuredPost && !searchQuery && selectedCategory === "All" && (
         <section className="pb-12">
           <div className="container">
             <div className="flex items-center gap-3 mb-6">
               <div className="h-px flex-1 max-w-[40px] bg-gradient-to-r from-blue-500 to-transparent" />
-              <span className="text-blue-400 text-xs font-bold tracking-widest uppercase">Destaque</span>
+              <span className="text-blue-400 text-xs font-bold tracking-widest uppercase">Featured</span>
             </div>
             <motion.div
               initial="hidden"
@@ -123,7 +123,7 @@ export default function Blog() {
                         <span className={`h-1.5 w-12 rounded-full bg-gradient-to-r ${featuredPost.gradient}`} />
                         <span className="text-xs font-bold text-blue-400 uppercase tracking-widest">{featuredPost.category}</span>
                         <span className="px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300 text-xs font-bold border border-blue-500/30">
-                          Destaque
+                          Featured
                         </span>
                       </div>
                       <h2 className="text-2xl sm:text-3xl font-display font-extrabold text-white mb-3 leading-tight group-hover:text-blue-100 transition-colors">
@@ -147,13 +147,13 @@ export default function Blog() {
                         </span>
                         <span className="flex items-center gap-1.5">
                           <Clock className="h-3.5 w-3.5" />
-                          {featuredPost.readTime} de leitura
+                          {featuredPost.readTime} read
                         </span>
                       </div>
                     </div>
                     <div className="flex justify-center lg:justify-end">
                       <div className="flex items-center gap-2 text-blue-400 font-bold group-hover:gap-4 transition-all">
-                        <span>Ler artigo</span>
+                        <span>Read article</span>
                         <ArrowRight className="h-5 w-5" />
                       </div>
                     </div>
@@ -184,7 +184,7 @@ export default function Blog() {
               </button>
             ))}
             <span className="ml-auto text-xs text-slate-500">
-              {filteredPosts.length} artigo{filteredPosts.length !== 1 ? "s" : ""}
+              {filteredPosts.length} article{filteredPosts.length !== 1 ? "s" : ""}
             </span>
           </div>
         </div>
@@ -203,12 +203,12 @@ export default function Blog() {
                 className="text-center py-20"
               >
                 <BookOpen className="h-12 w-12 text-slate-700 mx-auto mb-4" />
-                <p className="text-slate-500">Nenhum artigo encontrado para "{searchQuery}"</p>
+                <p className="text-slate-500">No articles found for "{searchQuery}"</p>
                 <button
-                  onClick={() => { setSearchQuery(""); setSelectedCategory("Todos"); }}
+                  onClick={() => { setSearchQuery(""); setSelectedCategory("All"); }}
                   className="mt-4 text-blue-400 text-sm hover:text-blue-300 transition-colors"
                 >
-                  Limpar filtros
+                  Clear filters
                 </button>
               </motion.div>
             ) : (
@@ -286,28 +286,28 @@ export default function Blog() {
             className="rounded-2xl border border-blue-500/20 bg-gradient-to-br from-blue-500/5 to-cyan-500/5 p-10 text-center"
           >
             <h3 className="text-xl font-display font-bold text-white mb-3">
-              Quer mais conteúdo de AI Engineering?
+              Want more AI Engineering content?
             </h3>
             <p className="text-slate-400 text-sm max-w-md mx-auto mb-6">
-              Siga no LinkedIn para notificações de novos artigos, projetos open-source e insights sobre IA em produção.
+              Follow on LinkedIn for new article notifications, open-source projects and production AI insights.
             </p>
             <div className="flex flex-wrap justify-center gap-3">
               <a href="https://www.linkedin.com/in/moises-costa-rj/" target="_blank" rel="noopener noreferrer">
                 <Button className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white border-0 gap-2">
                   <Linkedin className="h-4 w-4" />
-                  Seguir no LinkedIn
+                  Follow on LinkedIn
                 </Button>
               </a>
               <a href="https://github.com/Finish-Him" target="_blank" rel="noopener noreferrer">
                 <Button variant="outline" className="border-slate-700/60 text-slate-400 hover:text-white gap-2">
                   <Github className="h-4 w-4" />
-                  Ver GitHub
-                </Button>
+                  View GitHub
+              </Button>
               </a>
               <Link href="/">
                 <Button variant="outline" className="border-slate-700/60 text-slate-400 hover:text-white gap-2">
                   <ArrowLeft className="h-4 w-4" />
-                  Portfólio
+                  Portfolio
                 </Button>
               </Link>
             </div>

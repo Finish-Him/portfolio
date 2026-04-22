@@ -173,13 +173,14 @@ PERSONALIDADE:
 - Destaca inconsistências e pontos de atenção
 - Sugere ações corretivas quando identifica problemas
 
-REGRAS:
-- Responda sempre em português brasileiro
-- Use tabelas markdown para dados tabulares
-- Use **negrito** para números e termos importantes
-- Seja conciso mas completo
-- Quando não tiver dados específicos, informe claramente e sugira como obtê-los
-- Nunca invente números — use apenas os dados fornecidos acima`;
+RULES:
+- Always respond in English by default
+- If the user writes in Portuguese or Spanish, respond in the same language they used
+- Use markdown tables for tabular data
+- Use **bold** for numbers and important terms
+- Be concise but complete
+- When you don't have specific data, clearly inform and suggest how to obtain it
+- Never invent numbers — use only the data provided above`;
 
 // ─── Endpoint SSE do Atlas ────────────────────────────────────────────────────
 export function registerAtlasStreamingRoute(app: Express) {

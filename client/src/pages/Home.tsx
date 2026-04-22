@@ -11,7 +11,7 @@ import {
   Code2, Brain, Cpu, Database, Layers, Zap,
   ChevronRight, ChevronDown, MapPin, Mail, Award, Lock,
   Menu, X, Sparkles, Target, Shield, Phone, BookMarked, Newspaper,
-  Package, Scale
+  Package, Scale, Download
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -75,6 +75,7 @@ const T: Record<Lang, Record<string, string>> = {
     nav_demo: "Demo",
     whatsapp: "WhatsApp",
     hf_spaces: "Hugging Face",
+    cta_download: "Baixar CV",
   },
   en: {
     headline: "AI Engineer & Full Stack Developer",
@@ -132,6 +133,7 @@ const T: Record<Lang, Record<string, string>> = {
     nav_demo: "Demo",
     whatsapp: "WhatsApp",
     hf_spaces: "Hugging Face",
+    cta_download: "Download CV",
   },
   es: {
     headline: "AI Engineer & Full Stack Developer",
@@ -189,10 +191,10 @@ const T: Record<Lang, Record<string, string>> = {
     nav_demo: "Demo",
     whatsapp: "WhatsApp",
     hf_spaces: "Hugging Face",
+    cta_download: "Descargar CV",
   },
 };
-
-// ─── Agents ──────────────────────────────────────────────────────────────────
+// ─── Agentss ──────────────────────────────────────────────────────────────────
 const AGENTS = [
   {
     id: "arquimedes",
@@ -551,7 +553,7 @@ export default function Home() {
                   </Button>
                 </a>
               </div>
-              {/* CTAs — Row 2: HuggingFace + WhatsApp */}
+              {/* CTAs — Row 2: HuggingFace + WhatsApp + Download CV */}
               <div className="flex flex-wrap gap-3">
                 <a href="https://huggingface.co/Finish-him" target="_blank" rel="noopener noreferrer">
                   <Button size="lg" className="bg-orange-500/15 hover:bg-orange-500/25 text-orange-300 hover:text-orange-200 gap-2.5 text-base px-7 py-5 rounded-xl font-bold border border-orange-500/30 shadow-lg">
@@ -563,6 +565,12 @@ export default function Home() {
                   <Button size="lg" className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white gap-2.5 text-base px-7 py-5 rounded-xl font-bold border-0 shadow-xl shadow-green-900/30">
                     <Phone className="h-5 w-5" />
                     {t.whatsapp}
+                  </Button>
+                </a>
+                <a href="/manus-storage/Moises_Costa_CV_e64ae4d4.pdf" download="Moises_Costa_CV.pdf">
+                  <Button size="lg" className="bg-blue-600/20 hover:bg-blue-600/35 text-blue-300 hover:text-blue-200 gap-2.5 text-base px-7 py-5 rounded-xl font-bold border border-blue-500/30 shadow-lg">
+                    <Download className="h-5 w-5" />
+                    {t.cta_download}
                   </Button>
                 </a>
               </div>
