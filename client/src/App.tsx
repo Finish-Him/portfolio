@@ -5,6 +5,7 @@ import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
+import Login from "./pages/Login";
 import Chat from "./pages/Chat";
 import Topics from "./pages/Topics";
 import TopicDetail from "./pages/TopicDetail";
@@ -15,8 +16,11 @@ import AppLayout from "./components/AppLayout";
 function Router() {
   return (
     <Switch>
-      {/* Home — portfólio de agentes MSc Academy */}
+      {/* Home — portfólio AI Engineer para recrutadores */}
       <Route path="/" component={Home} />
+
+      {/* Login simples */}
+      <Route path="/login" component={Login} />
 
       {/* Arquimedes — agente de matemática */}
       <Route path="/arquimedes" component={() => <AppLayout agent="arquimedes"><Chat /></AppLayout>} />
@@ -28,7 +32,7 @@ function Router() {
       <Route path="/arquimedes/exercicios/:topicSlug" component={({ params }) => <AppLayout agent="arquimedes"><Exercises topicSlug={params.topicSlug} /></AppLayout>} />
       <Route path="/arquimedes/progresso" component={() => <AppLayout agent="arquimedes"><Progress /></AppLayout>} />
 
-      {/* Legacy redirects — mantém compatibilidade */}
+      {/* Legacy redirects */}
       <Route path="/chat" component={() => <AppLayout agent="arquimedes"><Chat /></AppLayout>} />
       <Route path="/topicos" component={() => <AppLayout agent="arquimedes"><Topics /></AppLayout>} />
       <Route path="/exercicios" component={() => <AppLayout agent="arquimedes"><Exercises /></AppLayout>} />

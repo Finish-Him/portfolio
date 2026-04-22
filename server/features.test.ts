@@ -137,3 +137,51 @@ describe("Progress Router", () => {
     expect(Array.isArray(progress)).toBe(true);
   });
 });
+
+describe("Simple Auth Login", () => {
+  it("rejects invalid credentials", async () => {
+    const res = await fetch("http://localhost:3000/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username: "wrong", password: "wrong" }),
+    });
+    expect(res.status).toBe(401);
+    const data = await res.json();
+    expect(data.error).toBeDefined();
+  });
+
+  it("accepts valid credentials for admin", async () => {
+    const res = await fetch("http://localhost:3000/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username: "admin", password: "admin" }),
+    });
+    expect(res.status).toBe(200);
+    const data = await res.json();
+    expect(data.success).toBe(true);
+    expect(data.user.name).toBe("Admin");
+  });
+
+  it("accepts valid credentials for Moises", async () => {
+    const res = await fetch("http://localhost:3000/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username: "Moises", password: "admin" }),
+    });
+    expect(res.status).toBe(200);
+    const data = await res.json();
+    expect(data.success).toBe(true);
+    expect(data.user.name).toBe("Moises Costa");
+  });
+});
+
+describe("Streaming Endpoint", () => {
+  it("returns 400 for missing message", async () => {
+    const res = await fetch("http://localhost:3000/api/chat/stream", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({}),
+    });
+    expect(res.status).toBe(400);
+  });
+});

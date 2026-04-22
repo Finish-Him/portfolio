@@ -1,305 +1,620 @@
+import { useState, useMemo, useEffect, useRef } from "react";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { getLoginUrl } from "@/const";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/contexts/ThemeContext";
 import { Link } from "wouter";
 import {
-  MessageCircle, BookOpen, GraduationCap, BarChart3,
-  ArrowRight, Sparkles, Sun, Moon, Lock, ExternalLink,
-  Plus, Minus, Divide, PieChart, Percent, Scale, CircleDot,
-  Globe, Atom, FlaskConical, Landmark
+  ArrowRight, ArrowUp, Sun, Moon, ExternalLink,
+  MessageCircle, Bot, BookOpen, GraduationCap,
+  Github, Linkedin, Globe, Trophy, Briefcase,
+  Code2, Brain, Cpu, Database, Layers, Zap,
+  ChevronRight, ChevronDown, MapPin, Mail, Award, Lock,
+  Menu, X, Sparkles, Target, Shield
 } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
-// ─── Agents Registry ───────────────────────────────────────────────────────
+// ─── i18n ────────────────────────────────────────────────────────────────────
+type Lang = "pt" | "en" | "es";
+
+const T: Record<Lang, Record<string, string>> = {
+  pt: {
+    headline: "AI Engineer & Full Stack Developer",
+    subheadline: "Construindo agentes inteligentes de produção com LangChain, LangGraph e Python. Especialista em orquestração agêntica, pipelines RAG e sistemas LLM escaláveis.",
+    cta_agents: "Testar Agentes ao Vivo",
+    cta_linkedin: "Ver LinkedIn",
+    cta_github: "Ver GitHub",
+    nav_agents: "Agentes",
+    nav_about: "Sobre",
+    nav_stack: "Stack",
+    nav_career: "Carreira",
+    nav_links: "Links",
+    nav_login: "Entrar",
+    badge_top1: "Top 1 Brasil",
+    badge_top8: "Top 8 Global",
+    badge_remote: "Remote LATAM → US/EU",
+    section_agents: "Agentes de IA em Produção",
+    section_agents_desc: "Cada agente é um sistema completo: arquitetura, orquestração, avaliação e deploy end-to-end. Clique para testar ao vivo.",
+    agent_demo: "Demo ao Vivo",
+    agent_soon: "Em Breve",
+    section_about: "Sobre Mim",
+    about_text: "12+ anos em TI, 6+ anos em Python. Engenheiro de IA focado em aplicações LLM de produção e pipelines RAG que entregam resultados. Atualmente na equipe de desenvolvimento (DTIC) do Detran-RJ, liderando modernização de backend e adoção de IA.",
+    section_stack: "Stack Técnica",
+    section_achievements: "Conquistas & Certificações",
+    ach_manus_top1: "Top 1 Brasil — Manus Academy",
+    ach_manus_top1_desc: "87% de score, 5 tentativas. Ranking diário.",
+    ach_manus_top8: "Top 8 Global — Manus Academy",
+    ach_manus_top8_desc: "13 distintivos, 2.740 pontos. Top 30 global atual.",
+    ach_hf: "35+ Apps no Hugging Face",
+    ach_hf_desc: "21 Spaces interativos, 20 datasets e 2 modelos customizados.",
+    ach_langchain: "LangChain Academy — Certified",
+    ach_langchain_desc: "Certificação em LangChain, LangGraph e LangSmith.",
+    ach_anthropic: "Anthropic Academy — Certified",
+    ach_anthropic_desc: "Certificação em Claude e prompt engineering avançado.",
+    ach_redhat: "Red Hat Certified — Developer Path",
+    ach_redhat_desc: "Certificação profissional em desenvolvimento.",
+    section_career: "Experiência Profissional",
+    career_detran_title: "Senior Python Developer",
+    career_detran_org: "Detran-RJ · DTIC",
+    career_detran_period: "2019 – Presente",
+    career_detran_desc: "REST APIs com FastAPI, pipelines GenAI com LangChain/OpenAI/Anthropic, RAG para análise de contratos, XGBoost para analytics, Docker + Grafana. Líder de estratégia de ferramentas de IA.",
+    career_detran2_title: "Analista de Sistemas / Suporte Técnico",
+    career_detran2_org: "Detran-RJ · Corregedoria & Ouvidoria",
+    career_detran2_period: "2014 – 2019",
+    career_detran2_desc: "Referência técnica interna, desenvolvimento de ferramentas, documentação, Scrum, tradução entre stakeholders técnicos e não-técnicos.",
+    section_links: "Links & Contato",
+    footer_copy: "Todos os direitos reservados",
+    availability: "Disponível para trabalho remoto — LATAM → US/EU. PJ ou CLT. Inglês fluente.",
+    contact_email: "moises.costa12345@gmail.com",
+    scroll_explore: "Explorar",
+    back_to_top: "Voltar ao topo",
+    nav_arquimedes: "Ir para Arquimedes",
+  },
+  en: {
+    headline: "AI Engineer & Full Stack Developer",
+    subheadline: "Building production-grade intelligent agents with LangChain, LangGraph & Python. Specialist in agentic orchestration, RAG pipelines and scalable LLM systems.",
+    cta_agents: "Try Live Agents",
+    cta_linkedin: "View LinkedIn",
+    cta_github: "View GitHub",
+    nav_agents: "Agents",
+    nav_about: "About",
+    nav_stack: "Stack",
+    nav_career: "Career",
+    nav_links: "Links",
+    nav_login: "Sign In",
+    badge_top1: "Top 1 Brazil",
+    badge_top8: "Top 8 Global",
+    badge_remote: "Remote LATAM → US/EU",
+    section_agents: "Production AI Agents",
+    section_agents_desc: "Each agent is a complete system: architecture, orchestration, evaluation, and end-to-end deployment. Click to try live.",
+    agent_demo: "Live Demo",
+    agent_soon: "Coming Soon",
+    section_about: "About Me",
+    about_text: "12+ years in IT, 6+ years in Python. AI Engineer focused on production-grade LLM applications and RAG pipelines that ship. Currently at Detran-RJ's development team (DTIC), leading backend modernization and AI adoption.",
+    section_stack: "Tech Stack",
+    section_achievements: "Achievements & Certifications",
+    ach_manus_top1: "Top 1 Brazil — Manus Academy",
+    ach_manus_top1_desc: "87% score, 5 attempts. Daily ranking.",
+    ach_manus_top8: "Top 8 Global — Manus Academy",
+    ach_manus_top8_desc: "13 badges, 2,740 points. Currently Top 30 global.",
+    ach_hf: "35+ Hugging Face Apps",
+    ach_hf_desc: "21 interactive Spaces, 20 datasets, and 2 custom models.",
+    ach_langchain: "LangChain Academy — Certified",
+    ach_langchain_desc: "Certified in LangChain, LangGraph and LangSmith.",
+    ach_anthropic: "Anthropic Academy — Certified",
+    ach_anthropic_desc: "Certified in Claude and advanced prompt engineering.",
+    ach_redhat: "Red Hat Certified — Developer Path",
+    ach_redhat_desc: "Professional development certification.",
+    section_career: "Professional Experience",
+    career_detran_title: "Senior Python Developer",
+    career_detran_org: "Detran-RJ · DTIC",
+    career_detran_period: "2019 – Present",
+    career_detran_desc: "REST APIs with FastAPI, GenAI pipelines with LangChain/OpenAI/Anthropic, RAG for contract analysis, XGBoost for analytics, Docker + Grafana. AI tooling strategy lead.",
+    career_detran2_title: "Systems Analyst / Technical Support",
+    career_detran2_org: "Detran-RJ · Internal Affairs & Ombudsman",
+    career_detran2_period: "2014 – 2019",
+    career_detran2_desc: "Internal technical reference, tool development, documentation, Scrum, bridging technical and non-technical stakeholders.",
+    section_links: "Links & Contact",
+    footer_copy: "All rights reserved",
+    availability: "Available for remote work — LATAM → US/EU. Contractor or full-time. Fluent English.",
+    contact_email: "moises.costa12345@gmail.com",
+    scroll_explore: "Explore",
+    back_to_top: "Back to top",
+    nav_arquimedes: "Go to Arquimedes",
+  },
+  es: {
+    headline: "AI Engineer & Full Stack Developer",
+    subheadline: "Construyendo agentes inteligentes de producción con LangChain, LangGraph y Python. Especialista en orquestación agéntica, pipelines RAG y sistemas LLM escalables.",
+    cta_agents: "Probar Agentes en Vivo",
+    cta_linkedin: "Ver LinkedIn",
+    cta_github: "Ver GitHub",
+    nav_agents: "Agentes",
+    nav_about: "Sobre",
+    nav_stack: "Stack",
+    nav_career: "Carrera",
+    nav_links: "Enlaces",
+    nav_login: "Entrar",
+    badge_top1: "Top 1 Brasil",
+    badge_top8: "Top 8 Global",
+    badge_remote: "Remoto LATAM → US/EU",
+    section_agents: "Agentes de IA en Producción",
+    section_agents_desc: "Cada agente es un sistema completo: arquitectura, orquestación, evaluación y deploy end-to-end. Haz clic para probar en vivo.",
+    agent_demo: "Demo en Vivo",
+    agent_soon: "Próximamente",
+    section_about: "Sobre Mí",
+    about_text: "12+ años en TI, 6+ años en Python. Ingeniero de IA enfocado en aplicaciones LLM de producción y pipelines RAG que entregan resultados. Actualmente en el equipo de desarrollo (DTIC) de Detran-RJ, liderando modernización de backend y adopción de IA.",
+    section_stack: "Stack Técnico",
+    section_achievements: "Logros & Certificaciones",
+    ach_manus_top1: "Top 1 Brasil — Manus Academy",
+    ach_manus_top1_desc: "87% de score, 5 intentos. Ranking diario.",
+    ach_manus_top8: "Top 8 Global — Manus Academy",
+    ach_manus_top8_desc: "13 insignias, 2.740 puntos. Top 30 global actual.",
+    ach_hf: "35+ Apps en Hugging Face",
+    ach_hf_desc: "21 Spaces interactivos, 20 datasets y 2 modelos customizados.",
+    ach_langchain: "LangChain Academy — Certified",
+    ach_langchain_desc: "Certificación en LangChain, LangGraph y LangSmith.",
+    ach_anthropic: "Anthropic Academy — Certified",
+    ach_anthropic_desc: "Certificación en Claude e ingeniería de prompts avanzada.",
+    ach_redhat: "Red Hat Certified — Developer Path",
+    ach_redhat_desc: "Certificación profesional de desarrollo.",
+    section_career: "Experiencia Profesional",
+    career_detran_title: "Senior Python Developer",
+    career_detran_org: "Detran-RJ · DTIC",
+    career_detran_period: "2019 – Presente",
+    career_detran_desc: "REST APIs con FastAPI, pipelines GenAI con LangChain/OpenAI/Anthropic, RAG para análisis de contratos, XGBoost para analytics, Docker + Grafana. Líder de estrategia de herramientas IA.",
+    career_detran2_title: "Analista de Sistemas / Soporte Técnico",
+    career_detran2_org: "Detran-RJ · Corregedoria & Ouvidoria",
+    career_detran2_period: "2014 – 2019",
+    career_detran2_desc: "Referencia técnica interna, desarrollo de herramientas, documentación, Scrum, puente entre stakeholders técnicos y no técnicos.",
+    section_links: "Enlaces & Contacto",
+    footer_copy: "Todos los derechos reservados",
+    availability: "Disponible para trabajo remoto — LATAM → US/EU. Contratista o tiempo completo. Inglés fluido.",
+    contact_email: "moises.costa12345@gmail.com",
+    scroll_explore: "Explorar",
+    back_to_top: "Volver arriba",
+    nav_arquimedes: "Ir a Arquimedes",
+  },
+};
+
+// ─── Agents ──────────────────────────────────────────────────────────────────
 const AGENTS = [
   {
     id: "arquimedes",
     name: "Arquimedes",
-    tagline: "Professor de Matemática",
-    description:
-      "Aprenda adição, subtração, divisão, frações, conjuntos, porcentagem e regra de 3 de forma visual, lúdica e contextualizada para todas as idades.",
+    tagline: { pt: "Agente de Matemática Interativa", en: "Interactive Math Agent", es: "Agente de Matemáticas Interactivo" },
+    desc: { pt: "LLM + TTS + Streaming SSE + Exercícios adaptativos. Ensina adição, subtração, divisão, frações, conjuntos, porcentagem e regra de 3.", en: "LLM + TTS + SSE Streaming + Adaptive exercises. Teaches addition, subtraction, division, fractions, sets, percentages and rule of three.", es: "LLM + TTS + Streaming SSE + Ejercicios adaptativos. Enseña suma, resta, división, fracciones, conjuntos, porcentaje y regla de tres." },
+    stack: ["LangChain", "React", "tRPC", "SSE", "TTS", "MySQL"],
     avatar: "/manus-storage/Arquimedes_f63227f7.webp",
     href: "/arquimedes/chat",
-    topics: ["Adição", "Subtração", "Divisão", "Fração", "Conjuntos", "Porcentagem", "Regra de 3"],
-    color: "from-msc-purple to-msc-indigo",
-    badge: "Disponível",
-    badgeColor: "bg-green-500/20 text-green-400 border-green-500/30",
     available: true,
-    icon: Plus,
+    gradient: "from-blue-500 via-cyan-500 to-blue-600",
+    glow: "shadow-blue-500/20",
   },
   {
     id: "atlas",
     name: "Atlas",
-    tagline: "Professor de Geografia",
-    description:
-      "Explore o mundo com o Atlas! Aprenda sobre continentes, países, capitais, relevo, clima e muito mais de forma interativa e visual.",
+    tagline: { pt: "Patrimônio DTIC — Detran-RJ", en: "DTIC Asset Management — Detran-RJ", es: "Patrimonio DTIC — Detran-RJ" },
+    desc: { pt: "Agente para gestão de patrimônio da DTIC do Detran-RJ. Controle de ativos, rastreamento e relatórios automatizados.", en: "Agent for DTIC asset management at Detran-RJ. Asset control, tracking and automated reporting.", es: "Agente para gestión de patrimonio DTIC de Detran-RJ. Control de activos, seguimiento e informes automatizados." },
+    stack: ["LangGraph", "FastAPI", "PostgreSQL", "Supabase", "PGvector"],
     avatar: null,
     href: "#",
-    topics: ["Continentes", "Países", "Capitais", "Relevo", "Clima", "Cartografia"],
-    color: "from-blue-600 to-cyan-600",
-    badge: "Em breve",
-    badgeColor: "bg-blue-500/20 text-blue-400 border-blue-500/30",
     available: false,
-    icon: Globe,
+    gradient: "from-emerald-500 via-teal-500 to-emerald-600",
+    glow: "shadow-emerald-500/20",
   },
   {
-    id: "newton",
-    name: "Newton",
-    tagline: "Professor de Física",
-    description:
-      "Descubra as leis que regem o universo com Newton. Mecânica, óptica, termodinâmica e eletromagnetismo explicados de forma simples.",
+    id: "artemis",
+    name: "Artemis",
+    tagline: { pt: "Preparação para a OAB", en: "Brazilian Bar Exam Prep", es: "Preparación para la OAB" },
+    desc: { pt: "Agente especializado para preparação da prova da OAB. Questões, simulados e explicações contextualizadas.", en: "Specialized agent for Brazilian Bar Exam preparation. Questions, mock exams and contextualized explanations.", es: "Agente especializado para preparación del examen OAB. Preguntas, simulacros y explicaciones contextualizadas." },
+    stack: ["RAG", "LangChain", "PGvector", "React", "FastAPI"],
     avatar: null,
     href: "#",
-    topics: ["Mecânica", "Óptica", "Termodinâmica", "Eletromagnetismo"],
-    color: "from-amber-600 to-orange-600",
-    badge: "Em breve",
-    badgeColor: "bg-amber-500/20 text-amber-400 border-amber-500/30",
     available: false,
-    icon: Atom,
-  },
-  {
-    id: "curie",
-    name: "Curie",
-    tagline: "Professora de Química",
-    description:
-      "Mergulhe no mundo dos elementos com Curie. Tabela periódica, reações químicas, ligações e muito mais de forma acessível.",
-    avatar: null,
-    href: "#",
-    topics: ["Tabela Periódica", "Reações", "Ligações", "Soluções"],
-    color: "from-emerald-600 to-teal-600",
-    badge: "Em breve",
-    badgeColor: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30",
-    available: false,
-    icon: FlaskConical,
+    gradient: "from-amber-500 via-orange-500 to-amber-600",
+    glow: "shadow-amber-500/20",
   },
 ];
 
-// ─── Stats ──────────────────────────────────────────────────────────────────
-const STATS = [
-  { value: "7", label: "Tópicos de Matemática" },
-  { value: "26+", label: "Exercícios disponíveis" },
-  { value: "4", label: "Agentes planejados" },
-  { value: "∞", label: "Possibilidades de aprendizado" },
+// ─── Tech Stack ──────────────────────────────────────────────────────────────
+const STACK_CATEGORIES = [
+  {
+    title: { pt: "Agentes & LLMs", en: "Agents & LLMs", es: "Agentes & LLMs" },
+    icon: Brain,
+    items: ["LangChain", "LangGraph", "CrewAI", "LangSmith", "OpenAI", "Anthropic", "MCP"],
+    color: "from-blue-500 to-cyan-500",
+  },
+  {
+    title: { pt: "Backend & APIs", en: "Backend & APIs", es: "Backend & APIs" },
+    icon: Cpu,
+    items: ["Python", "FastAPI", "Pydantic", "REST APIs", "tRPC", "Node.js"],
+    color: "from-emerald-500 to-teal-500",
+  },
+  {
+    title: { pt: "Dados & Vector DBs", en: "Data & Vector DBs", es: "Datos & Vector DBs" },
+    icon: Database,
+    items: ["PostgreSQL", "Supabase", "PGvector", "Pinecone", "FAISS", "Redis", "MongoDB"],
+    color: "from-purple-500 to-violet-500",
+  },
+  {
+    title: { pt: "Frontend & DevOps", en: "Frontend & DevOps", es: "Frontend & DevOps" },
+    icon: Layers,
+    items: ["React", "Tailwind", "Docker", "Git", "AWS", "Grafana", "CI/CD"],
+    color: "from-amber-500 to-orange-500",
+  },
 ];
+
+// ─── Links ───────────────────────────────────────────────────────────────────
+const LINKS = [
+  { label: "LinkedIn", href: "https://www.linkedin.com/in/moises-costa-rj/", icon: Linkedin, desc: "linkedin.com/in/moises-costa-rj" },
+  { label: "GitHub", href: "https://github.com/Finish-Him", icon: Github, desc: "github.com/Finish-Him" },
+  { label: "GitHub (MSc)", href: "https://github.com/Msc-Consultoriarj-org", icon: Github, desc: "github.com/Msc-Consultoriarj-org" },
+  { label: "Hugging Face", href: "https://huggingface.co/spaces/Finish-him", icon: Globe, desc: "huggingface.co/spaces/Finish-him" },
+];
+
+// ─── Sections for scroll-spy ─────────────────────────────────────────────────
+const SECTIONS = ["agents", "about", "stack", "career", "links"];
+
+// ─── Animation variants ──────────────────────────────────────────────────────
+const fadeUp = { hidden: { opacity: 0, y: 30 }, visible: { opacity: 1, y: 0 } };
+const fadeLeft = { hidden: { opacity: 0, x: -30 }, visible: { opacity: 1, x: 0 } };
+const fadeRight = { hidden: { opacity: 0, x: 30 }, visible: { opacity: 1, x: 0 } };
+const scaleIn = { hidden: { opacity: 0, scale: 0.9 }, visible: { opacity: 1, scale: 1 } };
 
 export default function Home() {
   const { isAuthenticated } = useAuth();
   const { theme, toggleTheme } = useTheme();
+  const [lang, setLang] = useState<Lang>("pt");
+  const [activeSection, setActiveSection] = useState("");
+  const [showBackToTop, setShowBackToTop] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const t = useMemo(() => T[lang], [lang]);
+
+  // Scroll-spy
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowBackToTop(window.scrollY > 400);
+      const sections = SECTIONS.map(id => document.getElementById(id));
+      for (let i = sections.length - 1; i >= 0; i--) {
+        const el = sections[i];
+        if (el && el.getBoundingClientRect().top <= 120) {
+          setActiveSection(SECTIONS[i]);
+          return;
+        }
+      }
+      setActiveSection("");
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const scrollTo = (id: string) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+    setMobileMenuOpen(false);
+  };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-[#060d1b] text-slate-100 overflow-x-hidden">
+      {/* ── Animated background ──────────────────────────────────────── */}
+      <div className="fixed inset-0 pointer-events-none z-0">
+        <div className="absolute inset-0 opacity-[0.03]" style={{
+          backgroundImage: "linear-gradient(rgba(59,130,246,0.4) 1px, transparent 1px), linear-gradient(90deg, rgba(59,130,246,0.4) 1px, transparent 1px)",
+          backgroundSize: "80px 80px",
+        }} />
+        <div className="absolute top-0 left-1/3 w-[800px] h-[800px] bg-blue-600/5 rounded-full blur-[200px]" />
+        <div className="absolute bottom-1/4 right-1/4 w-[600px] h-[600px] bg-cyan-500/5 rounded-full blur-[180px]" />
+      </div>
+
       {/* ── Navbar ─────────────────────────────────────────────────────── */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-background/60 backdrop-blur-xl border-b">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-[#060d1b]/70 backdrop-blur-2xl border-b border-blue-500/10">
         <div className="container flex h-16 items-center justify-between">
-          <div className="flex items-center gap-3">
-            <img src="/manus-storage/msc_academy_logo_7381d7e9.png" alt="MSc Academy" className="h-10 w-auto" />
-            <span className="font-display font-bold text-lg text-msc-gradient hidden sm:block">MSc Academy</span>
+          <button onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="flex items-center gap-3 group">
+            <img
+              src="https://d2xsxph8kpxj0f.cloudfront.net/310519663548238703/KFrFYg84PBb8CrQscNDMJb/favicon_msc-EyS528Y8qNEEzSwHrNmBLT.webp"
+              alt="MSc"
+              className="h-9 w-9 rounded-xl shadow-lg shadow-blue-500/10 group-hover:shadow-blue-500/30 transition-shadow"
+            />
+            <span className="font-display font-bold text-lg bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent hidden sm:block">
+              MSc Academy
+            </span>
+          </button>
+
+          {/* Desktop nav */}
+          <div className="hidden lg:flex items-center gap-1">
+            {SECTIONS.map((id) => (
+              <button
+                key={id}
+                onClick={() => scrollTo(id)}
+                className={`relative px-4 py-2 text-sm font-medium rounded-lg transition-all ${
+                  activeSection === id
+                    ? "text-blue-400 bg-blue-500/10"
+                    : "text-slate-400 hover:text-white hover:bg-white/5"
+                }`}
+              >
+                {t[`nav_${id}` as keyof typeof t] || id}
+                {activeSection === id && (
+                  <motion.div layoutId="nav-indicator" className="absolute bottom-0 left-2 right-2 h-0.5 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full" />
+                )}
+              </button>
+            ))}
           </div>
+
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" onClick={toggleTheme} className="h-9 w-9">
-              {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-            </Button>
+            {/* Language switcher */}
+            <div className="flex items-center bg-white/5 rounded-xl p-0.5 border border-white/5">
+              {(["pt", "en", "es"] as Lang[]).map((l) => (
+                <button
+                  key={l}
+                  onClick={() => setLang(l)}
+                  className={`px-2.5 py-1.5 text-xs font-bold rounded-lg transition-all ${
+                    lang === l
+                      ? "bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-lg shadow-blue-500/20"
+                      : "text-slate-500 hover:text-white"
+                  }`}
+                >
+                  {l.toUpperCase()}
+                </button>
+              ))}
+            </div>
+
             {isAuthenticated ? (
               <Link href="/arquimedes/chat">
-                <Button className="bg-msc-gradient text-white gap-2">
+                <Button size="sm" className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white gap-2 shadow-lg shadow-blue-600/20 border-0">
                   <MessageCircle className="h-4 w-4" />
-                  Ir para o Chat
+                  <span className="hidden sm:inline">Chat</span>
                 </Button>
               </Link>
             ) : (
-              <a href={getLoginUrl()}>
-                <Button className="bg-msc-gradient text-white">Entrar</Button>
-              </a>
-            )}
-          </div>
-        </div>
-      </nav>
-
-      {/* ── Hero ───────────────────────────────────────────────────────── */}
-      <section className="relative pt-32 pb-20 overflow-hidden">
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-40 -right-40 w-[600px] h-[600px] rounded-full bg-msc-purple/8 blur-3xl" />
-          <div className="absolute -bottom-40 -left-40 w-[600px] h-[600px] rounded-full bg-msc-blue/8 blur-3xl" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full bg-msc-indigo/5 blur-3xl" />
-        </div>
-
-        <div className="container relative text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="max-w-4xl mx-auto space-y-6"
-          >
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-msc-purple/10 border border-msc-purple/20">
-              <Sparkles className="h-4 w-4 text-msc-purple" />
-              <span className="text-sm font-medium text-msc-purple">Plataforma Educacional com IA</span>
-            </div>
-
-            <h1 className="text-4xl sm:text-5xl lg:text-7xl font-display font-bold leading-tight">
-              Aprenda com os{" "}
-              <span className="text-msc-gradient">Melhores Professores</span>{" "}
-              Virtuais
-            </h1>
-
-            <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto">
-              A MSc Academy reúne agentes de IA especializados em diferentes disciplinas.
-              Cada agente tem uma personalidade única, explica de forma visual e lúdica,
-              e se adapta a todas as idades.
-            </p>
-
-            <div className="flex flex-wrap justify-center gap-3">
-              {isAuthenticated ? (
-                <Link href="/arquimedes/chat">
-                  <Button size="lg" className="bg-msc-gradient text-white gap-2 text-base px-8">
-                    Conversar com Arquimedes
-                    <ArrowRight className="h-5 w-5" />
-                  </Button>
-                </Link>
-              ) : (
-                <a href={getLoginUrl()}>
-                  <Button size="lg" className="bg-msc-gradient text-white gap-2 text-base px-8">
-                    Começar Agora — É Grátis
-                    <ArrowRight className="h-5 w-5" />
-                  </Button>
-                </a>
-              )}
-              <Link href="/arquimedes/topicos">
-                <Button size="lg" variant="outline" className="gap-2 text-base">
-                  <BookOpen className="h-5 w-5" />
-                  Ver Tópicos
+              <Link href="/login">
+                <Button size="sm" className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white border-0 shadow-lg shadow-blue-600/20">
+                  {t.nav_login}
                 </Button>
               </Link>
-            </div>
+            )}
+
+            {/* Mobile menu */}
+            <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="lg:hidden p-2 text-slate-400 hover:text-white">
+              {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile dropdown */}
+        <AnimatePresence>
+          {mobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className="lg:hidden border-t border-blue-500/10 bg-[#060d1b]/95 backdrop-blur-2xl"
+            >
+              <div className="container py-4 flex flex-col gap-1">
+                {SECTIONS.map((id) => (
+                  <button
+                    key={id}
+                    onClick={() => scrollTo(id)}
+                    className={`px-4 py-3 text-left rounded-xl text-sm font-medium transition-all ${
+                      activeSection === id ? "text-blue-400 bg-blue-500/10" : "text-slate-400 hover:text-white hover:bg-white/5"
+                    }`}
+                  >
+                    {t[`nav_${id}` as keyof typeof t] || id}
+                  </button>
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </nav>
+
+      {/* ═══════════════════════════════════════════════════════════════════
+          HERO SECTION
+      ═══════════════════════════════════════════════════════════════════ */}
+      <section className="relative min-h-screen flex items-center pt-16">
+        {/* Hero background image */}
+        <div className="absolute inset-0 z-0">
+          <img
+            src="https://d2xsxph8kpxj0f.cloudfront.net/310519663548238703/KFrFYg84PBb8CrQscNDMJb/hero_banner_ai-bfBC6DN9kp5zN4bjYEnUZf.webp"
+            alt=""
+            className="w-full h-full object-cover opacity-30"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#060d1b]/60 via-[#060d1b]/80 to-[#060d1b]" />
+        </div>
+
+        <div className="container relative z-10">
+          <div className="grid lg:grid-cols-5 gap-12 items-center">
+            {/* Left: Text content (3 cols) */}
+            <motion.div
+              className="lg:col-span-3"
+              initial="hidden"
+              animate="visible"
+              variants={fadeLeft}
+              transition={{ duration: 0.7 }}
+            >
+              {/* Badges */}
+              <div className="flex flex-wrap gap-2.5 mb-8">
+                <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-yellow-500/15 to-amber-500/15 border border-yellow-500/30 text-yellow-400 text-sm font-bold shadow-lg shadow-yellow-500/5">
+                  <Trophy className="h-4 w-4" /> {t.badge_top1}
+                </span>
+                <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-blue-500/15 to-cyan-500/15 border border-blue-500/30 text-blue-400 text-sm font-bold shadow-lg shadow-blue-500/5">
+                  <Award className="h-4 w-4" /> {t.badge_top8}
+                </span>
+                <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-emerald-500/15 to-teal-500/15 border border-emerald-500/30 text-emerald-400 text-sm font-bold shadow-lg shadow-emerald-500/5">
+                  <Globe className="h-4 w-4" /> {t.badge_remote}
+                </span>
+              </div>
+
+              {/* Name with glow */}
+              <h1 className="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-display font-extrabold leading-[1.05] mb-3 tracking-tight">
+                <span className="relative">
+                  Moises Costa
+                  <span className="absolute -inset-1 bg-gradient-to-r from-blue-600/20 to-cyan-600/20 blur-2xl -z-10" />
+                </span>
+              </h1>
+
+              {/* Title gradient */}
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-display font-bold bg-gradient-to-r from-blue-400 via-cyan-300 to-blue-400 bg-clip-text text-transparent mb-6 leading-tight">
+                {t.headline}
+              </h2>
+
+              <p className="text-base sm:text-lg text-slate-400 max-w-2xl mb-10 leading-relaxed">
+                {t.subheadline}
+              </p>
+
+              {/* CTAs */}
+              <div className="flex flex-wrap gap-4">
+                <Button
+                  size="lg"
+                  onClick={() => scrollTo("agents")}
+                  className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white gap-2.5 text-base px-8 py-6 shadow-2xl shadow-blue-600/30 border-0 rounded-xl font-bold"
+                >
+                  <Sparkles className="h-5 w-5" />
+                  {t.cta_agents}
+                  <ArrowRight className="h-5 w-5" />
+                </Button>
+                <a href="https://www.linkedin.com/in/moises-costa-rj/" target="_blank" rel="noopener noreferrer">
+                  <Button size="lg" variant="outline" className="border-slate-700/80 text-slate-300 hover:bg-blue-500/10 hover:border-blue-500/40 gap-2.5 text-base px-8 py-6 rounded-xl font-bold">
+                    <Linkedin className="h-5 w-5" />
+                    {t.cta_linkedin}
+                  </Button>
+                </a>
+                <a href="https://github.com/Finish-Him" target="_blank" rel="noopener noreferrer">
+                  <Button size="lg" variant="outline" className="border-slate-700/80 text-slate-300 hover:bg-blue-500/10 hover:border-blue-500/40 gap-2.5 text-base px-8 py-6 rounded-xl font-bold">
+                    <Github className="h-5 w-5" />
+                    {t.cta_github}
+                  </Button>
+                </a>
+              </div>
+            </motion.div>
+
+            {/* Right: Profile image (2 cols) */}
+            <motion.div
+              className="lg:col-span-2 flex justify-center"
+              initial="hidden"
+              animate="visible"
+              variants={fadeRight}
+              transition={{ duration: 0.7, delay: 0.2 }}
+            >
+              <div className="relative">
+                {/* Glow ring */}
+                <div className="absolute -inset-4 bg-gradient-to-r from-blue-600/30 to-cyan-600/30 rounded-3xl blur-2xl" />
+                <div className="relative rounded-2xl overflow-hidden border-2 border-blue-500/20 shadow-2xl shadow-blue-900/40">
+                  <img
+                    src="https://d2xsxph8kpxj0f.cloudfront.net/310519663548238703/KFrFYg84PBb8CrQscNDMJb/profile_ai_engineer-Y3uUawQh9TVRML9GeMC5Kr.webp"
+                    alt="Moises Costa — AI Engineer"
+                    className="w-72 sm:w-80 lg:w-96 aspect-[3/4] object-cover"
+                  />
+                  {/* Overlay gradient */}
+                  <div className="absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t from-[#060d1b] to-transparent" />
+                </div>
+              </div>
+            </motion.div>
+          </div>
+
+          {/* Scroll indicator */}
+          <motion.div
+            className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 cursor-pointer"
+            animate={{ y: [0, 8, 0] }}
+            transition={{ repeat: Infinity, duration: 2 }}
+            onClick={() => scrollTo("agents")}
+          >
+            <span className="text-xs text-slate-500 font-medium">{t.scroll_explore}</span>
+            <ChevronDown className="h-5 w-5 text-blue-400" />
           </motion.div>
         </div>
       </section>
 
-      {/* ── Stats ──────────────────────────────────────────────────────── */}
-      <section className="py-12 border-y bg-muted/20">
-        <div className="container">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 text-center">
-            {STATS.map((stat, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.1 }}
-              >
-                <div className="text-3xl sm:text-4xl font-display font-bold text-msc-gradient mb-1">
-                  {stat.value}
-                </div>
-                <div className="text-sm text-muted-foreground">{stat.label}</div>
-              </motion.div>
-            ))}
-          </div>
+      {/* ═══════════════════════════════════════════════════════════════════
+          AGENTS SECTION
+      ═══════════════════════════════════════════════════════════════════ */}
+      <section id="agents" className="py-24 relative">
+        <div className="absolute inset-0 z-0">
+          <img
+            src="https://d2xsxph8kpxj0f.cloudfront.net/310519663548238703/KFrFYg84PBb8CrQscNDMJb/section_agents_bg-kqyffqVFMSJzxRF7K3iZnk.webp"
+            alt=""
+            className="w-full h-full object-cover opacity-10"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#060d1b] via-transparent to-[#060d1b]" />
         </div>
-      </section>
 
-      {/* ── Agents Grid ────────────────────────────────────────────────── */}
-      <section className="py-20">
-        <div className="container">
-          <div className="text-center mb-14">
-            <h2 className="text-3xl sm:text-4xl font-display font-bold mb-4">
-              Nossos <span className="text-msc-gradient">Agentes</span>
-            </h2>
-            <p className="text-muted-foreground max-w-xl mx-auto">
-              Cada agente é um especialista em sua área, com personalidade própria e metodologia
-              adaptada para tornar o aprendizado mais eficaz e divertido.
-            </p>
-          </div>
+        <div className="container relative z-10">
+          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={fadeUp} transition={{ duration: 0.6 }}>
+            <div className="flex items-center gap-3 mb-3">
+              <div className="h-px flex-1 max-w-[60px] bg-gradient-to-r from-blue-500 to-transparent" />
+              <span className="text-blue-400 text-sm font-bold tracking-widest uppercase">AI Agents</span>
+            </div>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-extrabold mb-3">{t.section_agents}</h2>
+            <p className="text-slate-400 mb-16 max-w-xl text-lg">{t.section_agents_desc}</p>
+          </motion.div>
 
-          <div className="grid md:grid-cols-2 gap-6">
+          <div className="grid lg:grid-cols-3 gap-8">
             {AGENTS.map((agent, i) => (
               <motion.div
                 key={agent.id}
-                initial={{ opacity: 0, y: 24 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: i * 0.1 }}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, margin: "-50px" }}
+                variants={scaleIn}
+                transition={{ duration: 0.5, delay: i * 0.15 }}
+                className="group"
               >
-                <div className={`relative group rounded-2xl border bg-card overflow-hidden transition-all duration-300 ${
+                <div className={`relative rounded-2xl border border-slate-800/60 bg-[#0c1629]/80 backdrop-blur-sm overflow-hidden transition-all duration-500 h-full flex flex-col ${
                   agent.available
-                    ? "hover:shadow-xl hover:shadow-msc-purple/10 hover:-translate-y-1 cursor-pointer"
-                    : "opacity-70"
-                }`}>
-                  {/* Top gradient bar */}
-                  <div className={`h-1 w-full bg-gradient-to-r ${agent.color}`} />
+                    ? `hover:border-blue-500/40 hover:shadow-2xl hover:${agent.glow} hover:-translate-y-2`
+                    : "opacity-50"
+                }`}
+                  style={{ transformStyle: "preserve-3d" }}
+                >
+                  {/* Top gradient bar with glow */}
+                  <div className={`h-1.5 w-full bg-gradient-to-r ${agent.gradient} shadow-lg`} />
 
-                  <div className="p-6 sm:p-8">
-                    <div className="flex items-start gap-5">
-                      {/* Avatar or placeholder */}
-                      <div className="shrink-0">
-                        {agent.avatar ? (
-                          <div className="relative">
-                            <div className={`absolute inset-0 bg-gradient-to-br ${agent.color} rounded-2xl blur-lg opacity-30`} />
-                            <img
-                              src={agent.avatar}
-                              alt={agent.name}
-                              className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-2xl object-cover shadow-lg"
-                            />
-                          </div>
-                        ) : (
-                          <div className={`w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-gradient-to-br ${agent.color} flex items-center justify-center shadow-lg`}>
-                            <agent.icon className="h-10 w-10 text-white/80" />
-                          </div>
-                        )}
-                      </div>
+                  {/* Card inner glow on hover */}
+                  <div className={`absolute inset-0 bg-gradient-to-br ${agent.gradient} opacity-0 group-hover:opacity-[0.03] transition-opacity duration-500`} />
 
-                      {/* Info */}
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 flex-wrap mb-1">
-                          <h3 className="text-xl font-display font-bold">{agent.name}</h3>
-                          <span className={`px-2 py-0.5 rounded-full text-xs font-medium border ${agent.badgeColor}`}>
-                            {agent.badge}
-                          </span>
+                  <div className="p-7 flex flex-col flex-1 relative z-10">
+                    {/* Avatar + Name */}
+                    <div className="flex items-center gap-4 mb-5">
+                      {agent.avatar ? (
+                        <div className="relative">
+                          <div className={`absolute -inset-1 bg-gradient-to-r ${agent.gradient} rounded-xl blur opacity-40`} />
+                          <img src={agent.avatar} alt={agent.name} className="relative w-16 h-16 rounded-xl object-cover shadow-xl" />
                         </div>
-                        <p className="text-sm text-msc-lavender font-medium mb-3">{agent.tagline}</p>
-                        <p className="text-sm text-muted-foreground leading-relaxed mb-4">
-                          {agent.description}
-                        </p>
-
-                        {/* Topics pills */}
-                        <div className="flex flex-wrap gap-1.5 mb-5">
-                          {agent.topics.map((topic) => (
-                            <span
-                              key={topic}
-                              className="px-2.5 py-1 rounded-lg bg-muted text-xs font-medium text-muted-foreground"
-                            >
-                              {topic}
-                            </span>
-                          ))}
+                      ) : (
+                        <div className={`w-16 h-16 rounded-xl bg-gradient-to-br ${agent.gradient} flex items-center justify-center shadow-xl`}>
+                          <Bot className="h-8 w-8 text-white/90" />
                         </div>
-
-                        {/* CTA */}
-                        {agent.available ? (
-                          <div className="flex gap-2 flex-wrap">
-                            <Link href={agent.href}>
-                              <Button className="bg-msc-gradient text-white gap-2">
-                                <MessageCircle className="h-4 w-4" />
-                                Conversar
-                              </Button>
-                            </Link>
-                            <Link href={`/${agent.id}/topicos`}>
-                              <Button variant="outline" className="gap-2">
-                                <BookOpen className="h-4 w-4" />
-                                Tópicos
-                              </Button>
-                            </Link>
-                            <Link href={`/${agent.id}/exercicios`}>
-                              <Button variant="outline" className="gap-2">
-                                <GraduationCap className="h-4 w-4" />
-                                Exercícios
-                              </Button>
-                            </Link>
-                          </div>
-                        ) : (
-                          <Button disabled variant="outline" className="gap-2 opacity-60">
-                            <Lock className="h-4 w-4" />
-                            Em desenvolvimento
-                          </Button>
-                        )}
+                      )}
+                      <div>
+                        <h3 className="text-xl font-display font-extrabold text-white">{agent.name}</h3>
+                        <p className="text-sm text-slate-400">{agent.tagline[lang]}</p>
                       </div>
                     </div>
+
+                    <p className="text-sm text-slate-400 leading-relaxed mb-5 flex-1">{agent.desc[lang]}</p>
+
+                    {/* Stack pills */}
+                    <div className="flex flex-wrap gap-2 mb-6">
+                      {agent.stack.map((s) => (
+                        <span key={s} className="px-2.5 py-1 rounded-lg bg-blue-500/10 text-blue-300 text-xs font-mono border border-blue-500/10">
+                          {s}
+                        </span>
+                      ))}
+                    </div>
+
+                    {/* CTA */}
+                    {agent.available ? (
+                      <Link href={agent.href}>
+                        <Button className={`w-full bg-gradient-to-r ${agent.gradient} hover:opacity-90 text-white gap-2 shadow-lg border-0 rounded-xl py-5 font-bold`}>
+                          <Zap className="h-4 w-4" />
+                          {t.agent_demo}
+                          <ChevronRight className="h-4 w-4" />
+                        </Button>
+                      </Link>
+                    ) : (
+                      <Button disabled className="w-full opacity-40 gap-2 rounded-xl py-5">
+                        <Lock className="h-4 w-4" />
+                        {t.agent_soon}
+                      </Button>
+                    )}
                   </div>
                 </div>
               </motion.div>
@@ -308,110 +623,329 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── Arquimedes Spotlight ────────────────────────────────────────── */}
-      <section className="py-20 bg-muted/20">
-        <div className="container">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6 }}
-              className="space-y-6"
-            >
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-msc-purple/10 border border-msc-purple/20">
-                <Sparkles className="h-4 w-4 text-msc-purple" />
-                <span className="text-sm font-medium text-msc-purple">Agente em destaque</span>
+      {/* ═══════════════════════════════════════════════════════════════════
+          ABOUT & ACHIEVEMENTS SECTION
+      ═══════════════════════════════════════════════════════════════════ */}
+      <section id="about" className="py-24 relative">
+        <div className="absolute inset-0 bg-gradient-to-b from-[#060d1b] via-[#0a1225] to-[#060d1b]" />
+        <div className="container relative z-10">
+          <div className="grid lg:grid-cols-2 gap-16 items-start">
+            {/* Left: About */}
+            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={fadeLeft} transition={{ duration: 0.6 }}>
+              <div className="flex items-center gap-3 mb-3">
+                <div className="h-px flex-1 max-w-[60px] bg-gradient-to-r from-blue-500 to-transparent" />
+                <span className="text-blue-400 text-sm font-bold tracking-widest uppercase">About</span>
               </div>
-              <h2 className="text-3xl sm:text-4xl font-display font-bold">
-                Conheça o <span className="text-msc-gradient">Arquimedes</span>
-              </h2>
-              <p className="text-muted-foreground text-lg">
-                Inspirado no grande matemático grego, o Arquimedes é paciente, entusiasmado
-                e usa exemplos do dia a dia para tornar a matemática acessível a todos.
-              </p>
-              <div className="grid grid-cols-2 gap-4">
-                {[
-                  { icon: MessageCircle, label: "Chat com streaming", desc: "Respostas palavra por palavra" },
-                  { icon: BookOpen, label: "7 tópicos", desc: "Do básico ao avançado" },
-                  { icon: GraduationCap, label: "Exercícios", desc: "Com feedback imediato" },
-                  { icon: BarChart3, label: "Progresso", desc: "Acompanhe sua evolução" },
-                ].map((item, i) => (
-                  <div key={i} className="flex items-start gap-3 p-3 rounded-xl bg-card border">
-                    <div className="w-8 h-8 rounded-lg bg-msc-gradient flex items-center justify-center shrink-0">
-                      <item.icon className="h-4 w-4 text-white" />
-                    </div>
-                    <div>
-                      <div className="text-sm font-semibold">{item.label}</div>
-                      <div className="text-xs text-muted-foreground">{item.desc}</div>
-                    </div>
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-extrabold mb-8">{t.section_about}</h2>
+              <p className="text-slate-300 text-lg leading-relaxed mb-8">{t.about_text}</p>
+
+              <div className="space-y-4 mb-8">
+                <div className="flex items-center gap-3 text-sm">
+                  <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center">
+                    <MapPin className="h-4 w-4 text-blue-400" />
                   </div>
-                ))}
-              </div>
-              <div className="flex gap-3">
-                {isAuthenticated ? (
-                  <Link href="/arquimedes/chat">
-                    <Button className="bg-msc-gradient text-white gap-2">
-                      Conversar com Arquimedes
-                      <ArrowRight className="h-4 w-4" />
-                    </Button>
-                  </Link>
-                ) : (
-                  <a href={getLoginUrl()}>
-                    <Button className="bg-msc-gradient text-white gap-2">
-                      Começar Agora
-                      <ArrowRight className="h-4 w-4" />
-                    </Button>
+                  <span className="text-slate-400">Rio de Janeiro, Brazil</span>
+                </div>
+                <div className="flex items-center gap-3 text-sm">
+                  <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center">
+                    <Mail className="h-4 w-4 text-blue-400" />
+                  </div>
+                  <a href="mailto:moises.costa12345@gmail.com" className="text-blue-400 hover:text-cyan-400 transition-colors">
+                    {t.contact_email}
                   </a>
-                )}
+                </div>
+              </div>
+
+              <div className="p-4 rounded-xl bg-gradient-to-r from-emerald-500/10 to-teal-500/10 border border-emerald-500/20">
+                <p className="text-sm text-emerald-400 font-medium flex items-center gap-2">
+                  <Target className="h-4 w-4" />
+                  {t.availability}
+                </p>
+              </div>
+
+              {/* Cross-links */}
+              <div className="flex flex-wrap gap-3 mt-8">
+                <Button variant="outline" size="sm" className="border-slate-700/60 text-slate-400 hover:text-blue-400 hover:border-blue-500/40 gap-2 rounded-xl" onClick={() => scrollTo("stack")}>
+                  <Code2 className="h-4 w-4" /> {t.section_stack}
+                </Button>
+                <Button variant="outline" size="sm" className="border-slate-700/60 text-slate-400 hover:text-blue-400 hover:border-blue-500/40 gap-2 rounded-xl" onClick={() => scrollTo("career")}>
+                  <Briefcase className="h-4 w-4" /> {t.section_career}
+                </Button>
+                <Button variant="outline" size="sm" className="border-slate-700/60 text-slate-400 hover:text-blue-400 hover:border-blue-500/40 gap-2 rounded-xl" onClick={() => scrollTo("agents")}>
+                  <Bot className="h-4 w-4" /> {t.nav_agents}
+                </Button>
               </div>
             </motion.div>
 
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="flex justify-center"
-            >
-              <div className="relative">
-                <div className="absolute inset-0 bg-msc-gradient rounded-3xl blur-2xl opacity-20 scale-110" />
-                <img
-                  src="/manus-storage/Arquimedes_f63227f7.webp"
-                  alt="Arquimedes - Professor Virtual de Matemática"
-                  className="relative w-72 lg:w-80 rounded-3xl shadow-2xl"
-                />
+            {/* Right: Achievements */}
+            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={fadeRight} transition={{ duration: 0.6, delay: 0.15 }}>
+              <h3 className="text-xl font-display font-bold mb-8 text-slate-200 flex items-center gap-2">
+                <Trophy className="h-5 w-5 text-yellow-400" />
+                {t.section_achievements}
+              </h3>
+              <div className="space-y-4">
+                {[
+                  { title: t.ach_manus_top1, desc: t.ach_manus_top1_desc, img: "/manus-storage/top1_manus_c14e2927.png", gradient: "from-yellow-500/20 to-amber-500/20", border: "border-yellow-500/30", icon: "🏆" },
+                  { title: t.ach_manus_top8, desc: t.ach_manus_top8_desc, img: "/manus-storage/top8_manus_global_19f36b79.jpg", gradient: "from-blue-500/20 to-cyan-500/20", border: "border-blue-500/30", icon: "🌍" },
+                  { title: t.ach_hf, desc: t.ach_hf_desc, img: null, gradient: "from-purple-500/15 to-violet-500/15", border: "border-purple-500/30", icon: "🤗" },
+                  { title: t.ach_langchain, desc: t.ach_langchain_desc, img: null, gradient: "from-green-500/15 to-emerald-500/15", border: "border-green-500/30", icon: "🦜" },
+                  { title: t.ach_anthropic, desc: t.ach_anthropic_desc, img: null, gradient: "from-orange-500/15 to-amber-500/15", border: "border-orange-500/30", icon: "🧠" },
+                  { title: t.ach_redhat, desc: t.ach_redhat_desc, img: null, gradient: "from-red-500/15 to-rose-500/15", border: "border-red-500/30", icon: "🎓" },
+                ].map((ach, i) => (
+                  <motion.div
+                    key={i}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true }}
+                    variants={fadeUp}
+                    transition={{ duration: 0.3, delay: i * 0.08 }}
+                    className={`flex items-center gap-4 p-4 rounded-xl border ${ach.border} bg-gradient-to-r ${ach.gradient} backdrop-blur-sm hover:scale-[1.02] transition-transform cursor-default`}
+                  >
+                    {ach.img ? (
+                      <img src={ach.img} alt={ach.title} className="w-16 h-12 rounded-lg object-cover shrink-0 shadow-lg" />
+                    ) : (
+                      <div className="w-16 h-12 rounded-lg bg-white/5 flex items-center justify-center shrink-0 text-2xl">
+                        {ach.icon}
+                      </div>
+                    )}
+                    <div className="min-w-0">
+                      <div className="font-bold text-sm text-white truncate">{ach.title}</div>
+                      <div className="text-xs text-slate-400">{ach.desc}</div>
+                    </div>
+                  </motion.div>
+                ))}
               </div>
             </motion.div>
           </div>
         </div>
       </section>
 
-      {/* ── Footer ─────────────────────────────────────────────────────── */}
-      <footer className="border-t py-10">
-        <div className="container">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
-            <div className="flex items-center gap-3">
-              <img src="/manus-storage/msc_academy_logo_7381d7e9.png" alt="MSc Academy" className="h-9 w-auto" />
-              <div>
-                <div className="font-display font-bold text-sm text-msc-gradient">MSc Academy</div>
-                <div className="text-xs text-muted-foreground">© {new Date().getFullYear()} Todos os direitos reservados</div>
-              </div>
+      {/* ═══════════════════════════════════════════════════════════════════
+          TECH STACK SECTION
+      ═══════════════════════════════════════════════════════════════════ */}
+      <section id="stack" className="py-24 relative">
+        <div className="absolute inset-0 z-0">
+          <img
+            src="https://d2xsxph8kpxj0f.cloudfront.net/310519663548238703/KFrFYg84PBb8CrQscNDMJb/section_stack_bg-ewFuaNugQWYQkes9ePKGzK.webp"
+            alt=""
+            className="w-full h-full object-cover opacity-8"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#060d1b] via-[#060d1b]/90 to-[#060d1b]" />
+        </div>
+
+        <div className="container relative z-10">
+          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={fadeUp} transition={{ duration: 0.6 }}>
+            <div className="flex items-center gap-3 mb-3">
+              <div className="h-px flex-1 max-w-[60px] bg-gradient-to-r from-blue-500 to-transparent" />
+              <span className="text-blue-400 text-sm font-bold tracking-widest uppercase">Tech Stack</span>
             </div>
-            <div className="flex items-center gap-4 text-sm text-muted-foreground">
-              <a
-                href="https://github.com/Finish-Him/Arquimedes"
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-extrabold mb-16">{t.section_stack}</h2>
+          </motion.div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {STACK_CATEGORIES.map((cat, i) => (
+              <motion.div
+                key={i}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, margin: "-50px" }}
+                variants={scaleIn}
+                transition={{ duration: 0.4, delay: i * 0.1 }}
+                className="group"
+              >
+                <div className="rounded-2xl border border-slate-800/60 bg-[#0c1629]/60 backdrop-blur-sm p-6 h-full hover:border-blue-500/30 hover:shadow-xl hover:shadow-blue-900/10 transition-all duration-300 hover:-translate-y-1">
+                  <div className="flex items-center gap-3 mb-5">
+                    <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${cat.color} flex items-center justify-center shadow-lg`}>
+                      <cat.icon className="h-5 w-5 text-white" />
+                    </div>
+                    <h3 className="font-display font-bold text-white">{cat.title[lang]}</h3>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {cat.items.map((item) => (
+                      <span key={item} className="px-3 py-1.5 rounded-lg bg-white/5 text-slate-300 text-xs font-mono border border-slate-700/40 hover:border-blue-500/30 hover:text-blue-300 transition-colors cursor-default">
+                        {item}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Cross-link */}
+          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} transition={{ duration: 0.4, delay: 0.4 }} className="mt-12 text-center">
+            <Button variant="outline" className="border-slate-700/60 text-slate-400 hover:text-blue-400 hover:border-blue-500/40 gap-2 rounded-xl" onClick={() => scrollTo("agents")}>
+              <Bot className="h-4 w-4" /> {t.nav_agents}
+              <ArrowRight className="h-4 w-4" />
+            </Button>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════════
+          CAREER SECTION
+      ═══════════════════════════════════════════════════════════════════ */}
+      <section id="career" className="py-24 relative">
+        <div className="absolute inset-0 bg-gradient-to-b from-[#060d1b] via-[#0a1225] to-[#060d1b]" />
+        <div className="container relative z-10">
+          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={fadeUp} transition={{ duration: 0.6 }}>
+            <div className="flex items-center gap-3 mb-3">
+              <div className="h-px flex-1 max-w-[60px] bg-gradient-to-r from-blue-500 to-transparent" />
+              <span className="text-blue-400 text-sm font-bold tracking-widest uppercase">Career</span>
+            </div>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-extrabold mb-16">{t.section_career}</h2>
+          </motion.div>
+
+          <div className="max-w-3xl space-y-8">
+            {[
+              { title: t.career_detran_title, org: t.career_detran_org, period: t.career_detran_period, desc: t.career_detran_desc, current: true },
+              { title: t.career_detran2_title, org: t.career_detran2_org, period: t.career_detran2_period, desc: t.career_detran2_desc, current: false },
+            ].map((job, i) => (
+              <motion.div
+                key={i}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true }}
+                variants={fadeUp}
+                transition={{ duration: 0.5, delay: i * 0.15 }}
+              >
+                <div className={`relative pl-10 border-l-2 ${job.current ? "border-blue-500" : "border-slate-700/60"}`}>
+                  <div className={`absolute left-[-9px] top-1 w-4 h-4 rounded-full border-2 ${
+                    job.current ? "bg-blue-500 border-blue-400 shadow-lg shadow-blue-500/40" : "bg-slate-700 border-slate-600"
+                  }`} />
+                  <div className="flex items-center gap-3 mb-2 flex-wrap">
+                    <h3 className="font-display font-extrabold text-white text-xl">{job.title}</h3>
+                    {job.current && (
+                      <span className="px-3 py-1 rounded-full bg-gradient-to-r from-blue-500/20 to-cyan-500/20 text-blue-400 text-xs font-bold border border-blue-500/30 shadow-lg shadow-blue-500/5">
+                        Current
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-slate-400 mb-3">
+                    <Briefcase className="h-4 w-4 text-blue-400/60" />
+                    <span>{job.org}</span>
+                    <span className="text-slate-700">|</span>
+                    <span>{job.period}</span>
+                  </div>
+                  <p className="text-sm text-slate-400 leading-relaxed">{job.desc}</p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Cross-link */}
+          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} transition={{ duration: 0.4, delay: 0.3 }} className="mt-12 flex gap-3">
+            <Button variant="outline" className="border-slate-700/60 text-slate-400 hover:text-blue-400 hover:border-blue-500/40 gap-2 rounded-xl" onClick={() => scrollTo("stack")}>
+              <Code2 className="h-4 w-4" /> {t.section_stack}
+            </Button>
+            <a href="https://www.linkedin.com/in/moises-costa-rj/" target="_blank" rel="noopener noreferrer">
+              <Button variant="outline" className="border-slate-700/60 text-slate-400 hover:text-blue-400 hover:border-blue-500/40 gap-2 rounded-xl">
+                <Linkedin className="h-4 w-4" /> {t.cta_linkedin}
+                <ExternalLink className="h-3 w-3" />
+              </Button>
+            </a>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════════
+          LINKS & CONTACT SECTION
+      ═══════════════════════════════════════════════════════════════════ */}
+      <section id="links" className="py-24 relative">
+        <div className="container relative z-10">
+          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={fadeUp} transition={{ duration: 0.6 }}>
+            <div className="flex items-center gap-3 mb-3">
+              <div className="h-px flex-1 max-w-[60px] bg-gradient-to-r from-blue-500 to-transparent" />
+              <span className="text-blue-400 text-sm font-bold tracking-widest uppercase">Connect</span>
+            </div>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-extrabold mb-16">{t.section_links}</h2>
+          </motion.div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {LINKS.map((link, i) => (
+              <motion.a
+                key={i}
+                href={link.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-1.5 hover:text-foreground transition-colors"
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true }}
+                variants={scaleIn}
+                transition={{ duration: 0.3, delay: i * 0.08 }}
+                className="group flex items-center gap-4 p-5 rounded-2xl border border-slate-800/60 bg-[#0c1629]/60 backdrop-blur-sm hover:border-blue-500/40 hover:shadow-xl hover:shadow-blue-900/10 transition-all duration-300 hover:-translate-y-1"
               >
-                <ExternalLink className="h-3.5 w-3.5" />
-                GitHub
-              </a>
-              <span>·</span>
-              <span>Plataforma educacional com IA</span>
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500/10 to-cyan-500/10 flex items-center justify-center group-hover:from-blue-500/20 group-hover:to-cyan-500/20 transition-all border border-blue-500/10 group-hover:border-blue-500/30">
+                  <link.icon className="h-5 w-5 text-slate-400 group-hover:text-blue-400 transition-colors" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="font-bold text-sm text-white">{link.label}</div>
+                  <div className="text-xs text-slate-500 truncate">{link.desc}</div>
+                </div>
+                <ExternalLink className="h-4 w-4 text-slate-700 group-hover:text-blue-400 transition-colors shrink-0" />
+              </motion.a>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════════
+          FOOTER
+      ═══════════════════════════════════════════════════════════════════ */}
+      <footer className="border-t border-slate-800/30 py-12 relative">
+        <div className="container relative z-10">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-8">
+            <div className="flex items-center gap-4">
+              <img
+                src="https://d2xsxph8kpxj0f.cloudfront.net/310519663548238703/KFrFYg84PBb8CrQscNDMJb/favicon_msc-EyS528Y8qNEEzSwHrNmBLT.webp"
+                alt="MSc Academy"
+                className="h-10 w-10 rounded-xl shadow-lg shadow-blue-500/10"
+              />
+              <div>
+                <div className="font-display font-bold text-sm bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">MSc Academy</div>
+                <div className="text-xs text-slate-500">&copy; {new Date().getFullYear()} Moises Costa. {t.footer_copy}.</div>
+              </div>
+            </div>
+
+            {/* Footer nav links */}
+            <div className="flex items-center gap-6">
+              {SECTIONS.map((id) => (
+                <button
+                  key={id}
+                  onClick={() => scrollTo(id)}
+                  className="text-xs text-slate-500 hover:text-blue-400 transition-colors capitalize"
+                >
+                  {t[`nav_${id}` as keyof typeof t] || id}
+                </button>
+              ))}
+            </div>
+
+            <div className="flex items-center gap-4">
+              {LINKS.map((link, i) => (
+                <a key={i} href={link.href} target="_blank" rel="noopener noreferrer" className="text-slate-600 hover:text-blue-400 transition-colors">
+                  <link.icon className="h-5 w-5" />
+                </a>
+              ))}
             </div>
           </div>
         </div>
       </footer>
+
+      {/* ── Back to top button ────────────────────────────────────────── */}
+      <AnimatePresence>
+        {showBackToTop && (
+          <motion.button
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+            className="fixed bottom-6 right-6 z-50 w-12 h-12 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-600 text-white flex items-center justify-center shadow-2xl shadow-blue-600/30 hover:from-blue-500 hover:to-cyan-500 transition-all"
+            title={t.back_to_top}
+          >
+            <ArrowUp className="h-5 w-5" />
+          </motion.button>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

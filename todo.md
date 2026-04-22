@@ -53,3 +53,70 @@
 ## Fase 7: README e Documentação
 - [x] README.md bilíngue (EN + PT) com badges, cores e formatação visual
 - [x] Commit e push final com documentação completa
+
+## Fase 8: Redesign Completo — Portfólio AI Engineer
+
+### Autenticação Simplificada
+- [x] Remover Manus OAuth, implementar login simples com users hardcoded
+- [x] Criar usuário admin/admin e Moises/admin
+- [x] Criar página de login com formulário estilizado
+- [x] Permitir acesso demo sem login (1 click da home)
+
+### Paleta de Cores — Roxo → Azul
+- [x] Substituir paleta roxo por paleta azul em index.css
+- [x] Atualizar todos os componentes para usar nova paleta azul
+- [x] Corrigir logo com fundo branco em background escuro (usando rounded-lg)
+
+### Home Page — Portfólio AI Engineer para Recrutadores
+- [x] Seção 1: Hero/Headline — AI Engineer Developer (primeira impressão impactante)
+- [x] Seção 2: Conquistas (Top 8 Manus Global, Top 1 BR, Manus Academy, Langchain Academy, Anthropic Academy)
+- [x] Seção 3: Agentes IA (Arquimedes, Atlas, Artemis) com acesso direto 1-click demo
+- [x] Seção 4: Experiência Profissional (Detran-RJ, Equipe de Desenvolvimento DTIC)
+- [x] Seção 5: Links (LinkedIn, GitHub, HuggingFace)
+- [x] Seção 6: Download de Currículo (CTA LinkedIn como alternativa)
+- [x] SEO agressivo com meta tags, keywords, Open Graph, structured data
+- [x] Multi-idioma: PT, EN, ES
+- [x] Copy voltada para recrutadores AI Engineer (nacional e internacional)
+- [x] Menos texto, mais informação visual
+- [x] Remover ícones genéricos
+- [x] CTAs estratégicos para recrutadores
+
+### Assets
+- [x] Upload das imagens de ranking (top1.png, Top8Manus.jpg)
+- [x] Corrigir logo MSc sem fundo branco (rounded-lg no container)
+
+### Gaps a Resolver
+- [x] Adicionar conquistas LangChain Academy e Anthropic Academy na seção About
+- [x] Implementar JSON-LD structured data no index.html
+- [x] Tratar logo MSc para remover fundo branco em dark mode (rounded container)
+
+## Fase 9: Home Page Premium — Visual Impactante
+
+### Assets Visuais (Nano Banana)
+- [x] Hero banner/background com estilo tech AI
+- [x] Favicon customizado MSc Academy (.ico + 192px)
+- [x] Imagem de perfil profissional estilizada
+- [x] Ícones/ilustrações para seções (agentes, stack, carreira)
+
+### Visual Premium
+- [x] Gradientes sofisticados e degradês multi-camada
+- [x] Efeitos 3D e relevo nos cards
+- [x] Tipografia impactante com hierarquia visual clara
+- [x] Transições e animações suaves entre seções
+- [x] Bordas e sombras com profundidade
+- [x] Micro-interações em hover/focus
+
+### Navegação Interconectada
+- [x] Menu sticky com scroll-spy (highlight da seção ativa)
+- [x] Botões de navegação entre seções (scroll indicator)
+- [x] CTAs em cada seção levando para outras partes do site
+- [x] Botão "voltar ao topo" flutuante
+- [x] Breadcrumbs visuais ou indicador de progresso de scroll
+- [x] Links cruzados entre agentes, stack e carreira
+- [x] Zero páginas órfãs — tudo interconectado
+
+### Seções Otimizadas
+- [x] Cada seção com propósito claro e objetivo visual
+- [x] Menos texto, mais informação visual
+- [x] Cards com hover 3D e sombras dinâmicas
+- [x] Seção de conquistas com imagens reais dos rankings

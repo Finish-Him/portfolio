@@ -5,7 +5,7 @@ import { useTheme } from "@/contexts/ThemeContext";
 import { Button } from "@/components/ui/button";
 import {
   MessageCircle, BookOpen, GraduationCap, BarChart3,
-  Sun, Moon, LogOut, Menu, X, Home, ChevronLeft
+  Sun, Moon, LogOut, Menu, X, Home, ChevronRight
 } from "lucide-react";
 import { useState } from "react";
 
@@ -48,14 +48,14 @@ export default function AppLayout({ children, agent = "arquimedes" }: AppLayoutP
               <img
                 src="/manus-storage/msc_academy_logo_7381d7e9.png"
                 alt="MSc Academy"
-                className="h-9 w-auto"
+                className="h-9 w-auto rounded-lg"
               />
-              <span className="hidden sm:block font-display font-bold text-base text-msc-gradient">
+              <span className="hidden sm:block font-display font-bold text-base bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
                 MSc Academy
               </span>
             </Link>
             <span className="hidden sm:flex items-center gap-1 text-muted-foreground text-sm">
-              <ChevronLeft className="h-3.5 w-3.5 rotate-180" />
+              <ChevronRight className="h-3.5 w-3.5" />
               <span className="font-medium text-foreground">{AGENT_LABELS[agent]}</span>
             </span>
           </div>
@@ -63,13 +63,13 @@ export default function AppLayout({ children, agent = "arquimedes" }: AppLayoutP
           {/* Desktop Nav */}
           <div className="hidden md:flex items-center gap-1">
             {navItems.map((item) => {
-              const isActive = location === item.href || location.startsWith(item.href);
+              const isActive = location === item.href || location.startsWith(item.href + "/");
               return (
                 <Link key={item.href} href={item.href}>
                   <Button
                     variant={isActive ? "default" : "ghost"}
                     size="sm"
-                    className={`gap-2 ${isActive ? "bg-msc-gradient text-white" : ""}`}
+                    className={`gap-2 ${isActive ? "bg-blue-600 hover:bg-blue-500 text-white" : ""}`}
                   >
                     <item.icon className="h-4 w-4" />
                     {item.label}
@@ -94,7 +94,7 @@ export default function AppLayout({ children, agent = "arquimedes" }: AppLayoutP
               </div>
             ) : (
               <a href={getLoginUrl()}>
-                <Button size="sm" className="bg-msc-gradient text-white">Entrar</Button>
+                <Button size="sm" className="bg-blue-600 hover:bg-blue-500 text-white">Entrar</Button>
               </a>
             )}
 
@@ -116,15 +116,15 @@ export default function AppLayout({ children, agent = "arquimedes" }: AppLayoutP
             <Link href="/" onClick={() => setMobileMenuOpen(false)}>
               <div className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-muted">
                 <Home className="h-5 w-5" />
-                <span className="font-medium">Início (Portfólio)</span>
+                <span className="font-medium">Portfólio</span>
               </div>
             </Link>
             {navItems.map((item) => {
-              const isActive = location === item.href || location.startsWith(item.href);
+              const isActive = location === item.href || location.startsWith(item.href + "/");
               return (
                 <Link key={item.href} href={item.href} onClick={() => setMobileMenuOpen(false)}>
                   <div className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                    isActive ? "bg-primary text-primary-foreground" : "hover:bg-muted"
+                    isActive ? "bg-blue-600 text-white" : "hover:bg-muted"
                   }`}>
                     <item.icon className="h-5 w-5" />
                     <span className="font-medium">{item.label}</span>

@@ -2,6 +2,7 @@ import type { Express, Request, Response } from "express";
 import { ENV } from "./_core/env";
 import { addChatMessage, getSessionMessages, createChatSession } from "./db";
 import { sdk } from "./_core/sdk";
+import { authenticateSimple } from "./simpleAuth";
 
 const ARQUIMEDES_SYSTEM_PROMPT = `Você é o Arquimedes, o professor de matemática virtual da MSc Academy. Você é um personagem inspirado no grande matemático grego Arquimedes de Siracusa, mas com uma personalidade moderna, divertida e acolhedora.
 
@@ -51,13 +52,20 @@ export function registerStreamingRoute(app: Express) {
       return;
     }
 
-    // Authenticate user via session cookie
+    // Authenticate user via session cookie (try simple auth first, then SDK)
     let user;
     try {
-      user = await sdk.authenticateRequest(req);
+      // Try simple auth first
+      const simpleUser = await authenticateSimple(req);
+      if (simpleUser) {
+        user = simpleUser;
+      } else {
+        // Fallback to SDK auth
+        user = await sdk.authenticateRequest(req);
+      }
     } catch {
-      res.status(401).json({ error: "Unauthorized" });
-      return;
+      // Allow demo mode without auth - use a default guest user
+      user = { id: 0 } as any;
     }
     const userId = user.id;
 

@@ -36,6 +36,9 @@ async function startServer() {
   app.use(express.urlencoded({ limit: "50mb", extended: true }));
   registerStorageProxy(app);
   registerOAuthRoutes(app);
+  // Simple auth routes (hardcoded users)
+  const { registerSimpleAuthRoutes } = await import("../simpleAuth");
+  registerSimpleAuthRoutes(app);
   // Streaming chat endpoint (SSE)
   const { registerStreamingRoute } = await import("../streaming");
   registerStreamingRoute(app);
