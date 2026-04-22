@@ -40,9 +40,9 @@
 
 ## Fase 5: Testes e Deploy
 - [x] Testes vitest para routers principais (11 testes passando)
-- [ ] Checkpoint e deploy no Manus
+- [x] Checkpoint e deploy no Manus (https://arquimath-kfrfyg84.manus.space)
 - [x] Repositório no GitHub (https://github.com/Finish-Him/Arquimedes)
-- [ ] Space no Hugging Face
+- [x] Space no Hugging Face (https://huggingface.co/spaces/Finish-him/MSc-Academy)
 
 ## Fase 6: Reestruturação de Rotas
 - [x] Mover Arquimedes para /arquimedes (chat, tópicos, exercícios, progresso)
@@ -52,4 +52,4 @@
 
 ## Fase 7: README e Documentação
 - [x] README.md bilíngue (EN + PT) com badges, cores e formatação visual
-- [ ] Commit e push final com documentação completa
+- [x] Commit e push final com documentação completa
