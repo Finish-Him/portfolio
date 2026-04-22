@@ -5,31 +5,34 @@ import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
+import Chat from "./pages/Chat";
+import Topics from "./pages/Topics";
+import TopicDetail from "./pages/TopicDetail";
+import Exercises from "./pages/Exercises";
+import Progress from "./pages/Progress";
+import AppLayout from "./components/AppLayout";
 
 function Router() {
-  // make sure to consider if you need authentication for certain routes
   return (
     <Switch>
-      <Route path={"/"} component={Home} />
-      <Route path={"/404"} component={NotFound} />
-      {/* Final fallback route */}
+      <Route path="/" component={Home} />
+      <Route path="/chat" component={() => <AppLayout><Chat /></AppLayout>} />
+      <Route path="/chat/:sessionId" component={({ params }) => <AppLayout><Chat sessionId={params.sessionId} /></AppLayout>} />
+      <Route path="/topicos" component={() => <AppLayout><Topics /></AppLayout>} />
+      <Route path="/topicos/:slug" component={({ params }) => <AppLayout><TopicDetail slug={params.slug} /></AppLayout>} />
+      <Route path="/exercicios" component={() => <AppLayout><Exercises /></AppLayout>} />
+      <Route path="/exercicios/:topicSlug" component={({ params }) => <AppLayout><Exercises topicSlug={params.topicSlug} /></AppLayout>} />
+      <Route path="/progresso" component={() => <AppLayout><Progress /></AppLayout>} />
+      <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>
   );
 }
 
-// NOTE: About Theme
-// - First choose a default theme according to your design style (dark or light bg), than change color palette in index.css
-//   to keep consistent foreground/background color across components
-// - If you want to make theme switchable, pass `switchable` ThemeProvider and use `useTheme` hook
-
 function App() {
   return (
     <ErrorBoundary>
-      <ThemeProvider
-        defaultTheme="light"
-        // switchable
-      >
+      <ThemeProvider defaultTheme="dark" switchable>
         <TooltipProvider>
           <Toaster />
           <Router />

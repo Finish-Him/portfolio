@@ -36,6 +36,10 @@ async function startServer() {
   app.use(express.urlencoded({ limit: "50mb", extended: true }));
   registerStorageProxy(app);
   registerOAuthRoutes(app);
+  // Streaming chat endpoint (SSE)
+  const { registerStreamingRoute } = await import("../streaming");
+  registerStreamingRoute(app);
+
   // tRPC API
   app.use(
     "/api/trpc",
