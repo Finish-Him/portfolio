@@ -469,7 +469,7 @@ export default function Home() {
         <div className="absolute inset-0 z-0">
           <img
             src="https://d2xsxph8kpxj0f.cloudfront.net/310519663548238703/KFrFYg84PBb8CrQscNDMJb/hero_banner_ai-bfBC6DN9kp5zN4bjYEnUZf.webp"
-            alt=""
+            alt="AI Engineer hero background with code and technology elements"
             className="w-full h-full object-cover opacity-30"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-[#060d1b]/60 via-[#060d1b]/80 to-[#060d1b]" />
@@ -620,7 +620,7 @@ export default function Home() {
         <div className="absolute inset-0 z-0">
           <img
             src="https://d2xsxph8kpxj0f.cloudfront.net/310519663548238703/KFrFYg84PBb8CrQscNDMJb/section_agents_bg-kqyffqVFMSJzxRF7K3iZnk.webp"
-            alt=""
+            alt="Intelligent agents background with neural network visualization"
             className="w-full h-full object-cover opacity-10"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-[#060d1b] via-transparent to-[#060d1b]" />
@@ -909,7 +909,7 @@ export default function Home() {
         <div className="absolute inset-0 z-0">
           <img
             src="https://d2xsxph8kpxj0f.cloudfront.net/310519663548238703/KFrFYg84PBb8CrQscNDMJb/section_stack_bg-ewFuaNugQWYQkes9ePKGzK.webp"
-            alt=""
+            alt="Technology stack background with programming languages and tools"
             className="w-full h-full object-cover opacity-8"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-[#060d1b] via-[#060d1b]/90 to-[#060d1b]" />
