@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:news="http://www.google.com/schemas/sitemap-news/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+
+  <!-- ── Static Pages ───────────────────────────────────────────────── -->
+  <url>
+    <loc>https://mscinterview.org/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <url>
+    <loc>https://mscinterview.org/blog</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://mscinterview.org/agents</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- ── Blog Articles ──────────────────────────────────────────────── -->
+  <url>
+    <loc>https://mscinterview.org/blog/orquestracao-agentica-langgraph</loc>
+    <lastmod>2025-12-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://d2xsxph8kpxj0f.cloudfront.net/310519663548238703/KFrFYg84PBb8CrQscNDMJb/blog-cover-langgraph-ehiEr5WNNTjjePRBvtTqen.webp</image:loc>
+      <image:title>Orquestração Agêntica com LangGraph: Do Zero ao Deploy</image:title>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://mscinterview.org/blog/rag-em-producao-arquitetura-chunking-avaliacao</loc>
+    <lastmod>2025-12-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://d2xsxph8kpxj0f.cloudfront.net/310519663548238703/KFrFYg84PBb8CrQscNDMJb/blog-cover-rag-5jAp4B8vCFBNMBHHVFdQ3J.webp</image:loc>
+      <image:title>RAG em Produção: Arquitetura, Chunking e Avaliação</image:title>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://mscinterview.org/blog/prompt-engineering-avancado-claude-gpt4</loc>
+    <lastmod>2026-01-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://d2xsxph8kpxj0f.cloudfront.net/310519663548238703/KFrFYg84PBb8CrQscNDMJb/blog-cover-prompt-engineering-YfoSYTXo2tPNycprQZjbjD.webp</image:loc>
+      <image:title>System Prompts e Role Prompts: Engenharia de Prompts Avançada</image:title>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://mscinterview.org/blog/mcp-model-context-protocol-futuro-agentes</loc>
+    <lastmod>2026-01-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://d2xsxph8kpxj0f.cloudfront.net/310519663548238703/KFrFYg84PBb8CrQscNDMJb/blog-cover-mcp-amTv59q95hsG3WMihpTUVd.webp</image:loc>
+      <image:title>MCP (Model Context Protocol): O Futuro da Integração de Agentes</image:title>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://mscinterview.org/blog/full-stack-ai-react-fastapi-langchain-producao</loc>
+    <lastmod>2026-01-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://d2xsxph8kpxj0f.cloudfront.net/310519663548238703/KFrFYg84PBb8CrQscNDMJb/blog-cover-fullstack-ai-UfvmWXcVfVE5VNaESDLCqJ.webp</image:loc>
+      <image:title>Full Stack AI: React + FastAPI + LangChain em Produção</image:title>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://mscinterview.org/blog/detran-rj-modernizacao-backend-genai</loc>
+    <lastmod>2026-02-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://d2xsxph8kpxj0f.cloudfront.net/310519663548238703/KFrFYg84PBb8CrQscNDMJb/blog-cover-detran-CvSoUduKUkzgmZKbkksQB3.webp</image:loc>
+      <image:title>Detran-RJ: Como Modernizamos o Backend com GenAI</image:title>
+    </image:image>
+  </url>
+
+</urlset>

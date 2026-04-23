@@ -1,0 +1,20 @@
+# robots.txt — MSc Academy (mscinterview.org)
+# Generated: 2026-04-23
+
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /api/trpc/
+Disallow: /api/oauth/
+
+# Allow search engine bots to crawl all public pages
+User-agent: Googlebot
+Allow: /
+Disallow: /api/
+
+User-agent: Bingbot
+Allow: /
+Disallow: /api/
+
+# Sitemap location
+Sitemap: https://mscinterview.org/sitemap.xml

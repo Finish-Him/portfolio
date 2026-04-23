@@ -13,6 +13,15 @@ export interface BlogPost {
   gradient: string;
   category: string;
   featured?: boolean;
+  // SEO & Media
+  coverImage?: string;       // URL of the cover image (webp compressed)
+  seoDescription?: string;   // Meta description (150-160 chars)
+  seoKeywords?: string[];    // Focus keywords for SEO
+  author?: string;           // Author name
+  canonicalUrl?: string;     // Canonical URL override
+  // Internal & external links for SEO
+  relatedSlugs?: string[];   // Internal links to other posts
+  externalLinks?: { label: string; url: string; rel?: string }[];
 }
 
 export const BLOG_POSTS: BlogPost[] = [
@@ -27,6 +36,16 @@ export const BLOG_POSTS: BlogPost[] = [
     gradient: "from-blue-500 to-cyan-500",
     category: "Agentes de IA",
     featured: true,
+    coverImage: "https://d2xsxph8kpxj0f.cloudfront.net/310519663548238703/KFrFYg84PBb8CrQscNDMJb/blog-cover-langgraph-ehiEr5WNNTjjePRBvtTqen.webp",
+    author: "Moises Costa",
+    seoDescription: "Aprenda a construir agentes de IA com LangGraph em produção: StateGraph, checkpointing, deploy via FastAPI e observabilidade com LangSmith. Guia completo com código Python.",
+    seoKeywords: ["LangGraph", "agentes de IA", "LangChain Python", "orquestração agêntica", "FastAPI AI", "StateGraph", "AI engineering"],
+    relatedSlugs: ["rag-em-producao-arquitetura-chunking-avaliacao", "mcp-model-context-protocol-futuro-agentes", "full-stack-ai-react-fastapi-langchain-producao"],
+    externalLinks: [
+      { label: "LangGraph Documentation", url: "https://langchain-ai.github.io/langgraph/", rel: "noopener noreferrer" },
+      { label: "LangSmith Observability", url: "https://smith.langchain.com/", rel: "noopener noreferrer" },
+      { label: "LangChain GitHub", url: "https://github.com/langchain-ai/langchain", rel: "noopener noreferrer" },
+    ],
     content: `
 # Orquestração Agêntica com LangGraph: Do Zero ao Deploy
 
@@ -216,6 +235,16 @@ No próximo artigo, vou mostrar como combino LangGraph com RAG para criar agente
   {
     slug: "rag-em-producao-arquitetura-chunking-avaliacao",
     title: "RAG em Produção: Arquitetura, Chunking e Avaliação",
+    coverImage: "https://d2xsxph8kpxj0f.cloudfront.net/310519663548238703/KFrFYg84PBb8CrQscNDMJb/blog-cover-rag-5jAp4B8vCFBNMBHHVFdQ3J.webp",
+    author: "Moises Costa",
+    seoDescription: "Guia completo de RAG em produção: arquitetura de chunking, vector databases (Pinecone, Weaviate), avaliação com RAGAS e pipelines de reranking. Código Python real.",
+    seoKeywords: ["RAG", "Retrieval Augmented Generation", "vector database", "chunking", "embeddings", "Pinecone", "LangChain RAG", "RAGAS"],
+    relatedSlugs: ["orquestracao-agentica-langgraph", "prompt-engineering-avancado-claude-gpt4", "full-stack-ai-react-fastapi-langchain-producao"],
+    externalLinks: [
+      { label: "Pinecone Vector Database", url: "https://www.pinecone.io/", rel: "noopener noreferrer" },
+      { label: "RAGAS Evaluation Framework", url: "https://docs.ragas.io/", rel: "noopener noreferrer" },
+      { label: "LangChain RAG Tutorial", url: "https://python.langchain.com/docs/tutorials/rag/", rel: "noopener noreferrer" },
+    ],
     excerpt:
       "Guia completo para implementar Retrieval-Augmented Generation com PGvector, Supabase e avaliação com LangSmith. Aprenda os erros que cometi e como evitá-los.",
     tags: ["RAG", "PGvector", "Supabase", "LLM", "LangChain"],
@@ -426,6 +455,16 @@ RAG em produção é muito mais do que \`vectorstore.similarity_search(query)\`.
   {
     slug: "prompt-engineering-avancado-claude-gpt4",
     title: "System Prompts e Role Prompts: Engenharia de Prompts Avançada",
+    coverImage: "https://d2xsxph8kpxj0f.cloudfront.net/310519663548238703/KFrFYg84PBb8CrQscNDMJb/blog-cover-prompt-engineering-YfoSYTXo2tPNycprQZjbjD.webp",
+    author: "Moises Costa",
+    seoDescription: "Técnicas avançadas de prompt engineering: system prompts, role prompts, chain-of-thought, few-shot e estruturação para Claude e GPT-4. Exemplos práticos de produção.",
+    seoKeywords: ["prompt engineering", "system prompt", "Claude API", "GPT-4", "chain-of-thought", "few-shot prompting", "LLM prompts"],
+    relatedSlugs: ["orquestracao-agentica-langgraph", "rag-em-producao-arquitetura-chunking-avaliacao", "mcp-model-context-protocol-futuro-agentes"],
+    externalLinks: [
+      { label: "Anthropic Prompt Engineering Guide", url: "https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview", rel: "noopener noreferrer" },
+      { label: "OpenAI Prompt Engineering", url: "https://platform.openai.com/docs/guides/prompt-engineering", rel: "noopener noreferrer" },
+      { label: "Chain-of-Thought Paper", url: "https://arxiv.org/abs/2201.11903", rel: "noopener noreferrer" },
+    ],
     excerpt:
       "Técnicas avançadas de prompt engineering para Claude, GPT-4 e modelos open-source. Padrões, anti-padrões e benchmarks com dados reais de produção.",
     tags: ["Prompt Engineering", "Claude", "OpenAI", "Anthropic", "LLM"],
@@ -611,6 +650,16 @@ Prompt engineering é engenharia. Meça, itere, versione e monitore. A diferenç
   {
     slug: "mcp-model-context-protocol-futuro-agentes",
     title: "MCP (Model Context Protocol): O Futuro da Integração de Agentes",
+    coverImage: "https://d2xsxph8kpxj0f.cloudfront.net/310519663548238703/KFrFYg84PBb8CrQscNDMJb/blog-cover-mcp-amTv59q95hsG3WMihpTUVd.webp",
+    author: "Moises Costa",
+    seoDescription: "O que é MCP (Model Context Protocol) e como ele transforma a integração de agentes de IA com ferramentas externas. Guia prático com TypeScript e Python.",
+    seoKeywords: ["MCP", "Model Context Protocol", "Anthropic MCP", "AI agents tools", "LLM integration", "agent protocol", "Claude MCP"],
+    relatedSlugs: ["orquestracao-agentica-langgraph", "prompt-engineering-avancado-claude-gpt4", "full-stack-ai-react-fastapi-langchain-producao"],
+    externalLinks: [
+      { label: "MCP Official Specification", url: "https://modelcontextprotocol.io/", rel: "noopener noreferrer" },
+      { label: "Anthropic MCP Announcement", url: "https://www.anthropic.com/news/model-context-protocol", rel: "noopener noreferrer" },
+      { label: "MCP GitHub Repository", url: "https://github.com/modelcontextprotocol/specification", rel: "noopener noreferrer" },
+    ],
     excerpt:
       "Como o MCP está mudando a forma como agentes de IA se conectam a ferramentas externas e sistemas legados. Implementação prática com Python e TypeScript.",
     tags: ["MCP", "Agents", "Integration", "LLM", "Anthropic"],
@@ -775,6 +824,16 @@ O MCP representa uma mudança de paradigma: de integrações proprietárias para
   {
     slug: "full-stack-ai-react-fastapi-langchain-producao",
     title: "Full Stack AI: React + FastAPI + LangChain em Produção",
+    coverImage: "https://d2xsxph8kpxj0f.cloudfront.net/310519663548238703/KFrFYg84PBb8CrQscNDMJb/blog-cover-fullstack-ai-UfvmWXcVfVE5VNaESDLCqJ.webp",
+    author: "Moises Costa",
+    seoDescription: "Como construir uma aplicação Full Stack AI com React 19, FastAPI e LangChain em produção: streaming SSE, autenticação JWT, deploy Docker e monitoramento.",
+    seoKeywords: ["Full Stack AI", "React FastAPI", "LangChain production", "SSE streaming", "AI web app", "Python FastAPI", "React 19 AI"],
+    relatedSlugs: ["orquestracao-agentica-langgraph", "rag-em-producao-arquitetura-chunking-avaliacao", "mcp-model-context-protocol-futuro-agentes"],
+    externalLinks: [
+      { label: "FastAPI Documentation", url: "https://fastapi.tiangolo.com/", rel: "noopener noreferrer" },
+      { label: "React 19 Release Notes", url: "https://react.dev/blog/2024/12/05/react-19", rel: "noopener noreferrer" },
+      { label: "LangChain Streaming Guide", url: "https://python.langchain.com/docs/how_to/streaming/", rel: "noopener noreferrer" },
+    ],
     excerpt:
       "Arquitetura completa de uma aplicação de IA com streaming SSE, autenticação, banco vetorial e deploy. O que aprendi construindo a MSc Academy.",
     tags: ["React", "FastAPI", "LangChain", "Full Stack", "SSE", "Deploy"],
@@ -1026,6 +1085,16 @@ Construir aplicações Full Stack AI é um campo em rápida evolução. A stack 
   {
     slug: "detran-rj-modernizacao-backend-genai",
     title: "Detran-RJ: Como Modernizamos o Backend com GenAI",
+    coverImage: "https://d2xsxph8kpxj0f.cloudfront.net/310519663548238703/KFrFYg84PBb8CrQscNDMJb/blog-cover-detran-CvSoUduKUkzgmZKbkksQB3.webp",
+    author: "Moises Costa",
+    seoDescription: "Case study: como o Detran-RJ modernizou seu backend com IA generativa, chatbots de atendimento, OCR de documentos e automação de processos com Python e FastAPI.",
+    seoKeywords: ["Detran-RJ", "GenAI governo", "modernização digital", "chatbot governo", "OCR documentos", "FastAPI Python", "transformação digital"],
+    relatedSlugs: ["rag-em-producao-arquitetura-chunking-avaliacao", "full-stack-ai-react-fastapi-langchain-producao", "orquestracao-agentica-langgraph"],
+    externalLinks: [
+      { label: "Detran-RJ Portal Oficial", url: "https://www.detran.rj.gov.br/", rel: "noopener noreferrer" },
+      { label: "Google Cloud Document AI", url: "https://cloud.google.com/document-ai", rel: "noopener noreferrer" },
+      { label: "FastAPI Background Tasks", url: "https://fastapi.tiangolo.com/tutorial/background-tasks/", rel: "noopener noreferrer" },
+    ],
     excerpt:
       "Case real: implementação de pipelines de IA em um órgão público, desafios únicos de compliance, LGPD, legado e os resultados que alcançamos.",
     tags: ["Case Study", "GenAI", "FastAPI", "Detran", "LGPD", "Python"],

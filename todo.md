@@ -198,3 +198,15 @@
 - [x] Sessão anônima via localStorage token (usuários não logados)
 - [x] 28 novos testes Vitest passando (97 total)
 - [x] Salvar checkpoint v2.17
+
+## Fase 18: Blog SEO Completo + Imagens + Layout Limpo
+- [x] Gerar 6 imagens de capa para os artigos do blog (LangGraph, RAG, Prompt Eng, MCP, Full Stack AI, Detran)
+- [x] Adicionar campos SEO na interface BlogPost: coverImage, seoDescription, seoKeywords, author, relatedSlugs, externalLinks
+- [x] Preencher SEO e links externos em todos os 6 artigos
+- [x] Reescrever Blog.tsx: cards com imagem, paginação, filtros em submenu colapsável, CTA /agents
+- [x] Reescrever BlogPost.tsx: meta tags dinâmicas, OG, Twitter Card, JSON-LD (BlogPosting), canonical, breadcrumb, imagem de capa, links externos, CTA /agents, artigos relacionados
+- [x] Criar sitemap.xml com 9 URLs + image:image para cada artigo
+- [x] Criar robots.txt com regras para Googlebot/Bingbot e referência ao sitemap
+- [x] Atualizar index.html: title, description, keywords expandidos, canonical mscinterview.org, OG image real, JSON-LD Person + WebSite + Blog
+- [x] 97 testes Vitest passando
+- [x] Salvar checkpoint v2.18
