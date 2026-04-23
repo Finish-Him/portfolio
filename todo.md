@@ -141,3 +141,19 @@
 - [x] Dados de artigos em /client/src/data/blogPosts.ts (estático, SEO-friendly)
 - [x] Rota /blog/:slug registrada no App.tsx
 - [x] Artigos publicados: LangGraph, RAG em Produção, Prompt Engineering, MCP, Full Stack AI, Detran-RJ Case Study
+
+## Fase 13: Suíte Completa de Testes
+
+- [ ] Instalar Playwright e configurar para E2E
+- [ ] Testes unitários: db helpers (saveContactLead, getTopics, etc.)
+- [ ] Testes unitários: atlasStreaming system prompt builder
+- [ ] Testes unitários: streaming.ts helpers
+- [ ] Testes de integração: tRPC contact.submitContact
+- [ ] Testes de integração: tRPC auth.me (autenticado e não autenticado)
+- [ ] Testes de integração: endpoint SSE /api/chat/stream
+- [ ] Testes de integração: endpoint SSE /api/atlas/stream
+- [ ] Testes E2E: Home page carrega corretamente
+- [ ] Testes E2E: Navegação entre páginas (Blog, Agents)
+- [ ] Testes E2E: Chat do Arquimedes envia mensagem e recebe resposta
+- [ ] Testes E2E: Formulário de contato submissão com sucesso
+- [ ] Testes E2E: Download do CV
